@@ -1,0 +1,1192 @@
+[
+  {
+    "scenario_id": "UNAMB-001",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T3_FULL_ACCESS",
+    "reasoning": "All indicators stable and trustworthy \u2014 full access appropriate.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-002",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T3_FULL_ACCESS",
+    "reasoning": "All indicators stable and trustworthy \u2014 full access appropriate.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-003",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T3_FULL_ACCESS",
+    "reasoning": "All indicators stable and trustworthy \u2014 full access appropriate.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-004",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T3_FULL_ACCESS",
+    "reasoning": "All indicators stable and trustworthy \u2014 full access appropriate.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-005",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T3_FULL_ACCESS",
+    "reasoning": "All indicators stable and trustworthy \u2014 full access appropriate.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-006",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "anomalous"
+    },
+    "expected_tier": "T3_FULL_ACCESS",
+    "reasoning": "All indicators stable and trustworthy \u2014 full access appropriate.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-007",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T3_FULL_ACCESS",
+    "reasoning": "All indicators stable and trustworthy \u2014 full access appropriate.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-008",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T3_FULL_ACCESS",
+    "reasoning": "All indicators stable and trustworthy \u2014 full access appropriate.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-009",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T3_FULL_ACCESS",
+    "reasoning": "All indicators stable and trustworthy \u2014 full access appropriate.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-010",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T3_FULL_ACCESS",
+    "reasoning": "All indicators stable and trustworthy \u2014 full access appropriate.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-011",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T3_FULL_ACCESS",
+    "reasoning": "All indicators stable and trustworthy \u2014 full access appropriate.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-012",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T3_FULL_ACCESS",
+    "reasoning": "All indicators stable and trustworthy \u2014 full access appropriate.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-013",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-014",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-015",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "anomalous"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-016",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "anomalous"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-017",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-018",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-019",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-020",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-021",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-022",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "anomalous"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-023",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-024",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-025",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-026",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-027",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-028",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Moderate risk indicators present \u2014 monitoring warranted.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-029",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Multiple elevated risk indicators \u2014 restrict access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-030",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Multiple elevated risk indicators \u2014 restrict access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-031",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Multiple elevated risk indicators \u2014 restrict access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-032",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Multiple elevated risk indicators \u2014 restrict access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-033",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Multiple elevated risk indicators \u2014 restrict access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-034",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Multiple elevated risk indicators \u2014 restrict access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-035",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Multiple elevated risk indicators \u2014 restrict access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-036",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Multiple elevated risk indicators \u2014 restrict access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-037",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "anomalous"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Multiple elevated risk indicators \u2014 restrict access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-038",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "anomalous"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Multiple elevated risk indicators \u2014 restrict access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-039",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "anomalous"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Multiple elevated risk indicators \u2014 restrict access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-040",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "anomalous"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Multiple elevated risk indicators \u2014 restrict access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-041",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Multiple elevated risk indicators \u2014 restrict access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-042",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Multiple elevated risk indicators \u2014 restrict access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-043",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T0_REJECT",
+    "reasoning": "Severe risk across all indicators \u2014 reject access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-044",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T0_REJECT",
+    "reasoning": "Severe risk across all indicators \u2014 reject access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-045",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T0_REJECT",
+    "reasoning": "Severe risk across all indicators \u2014 reject access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-046",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "anomalous"
+    },
+    "expected_tier": "T0_REJECT",
+    "reasoning": "Severe risk across all indicators \u2014 reject access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-047",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "anomalous"
+    },
+    "expected_tier": "T0_REJECT",
+    "reasoning": "Severe risk across all indicators \u2014 reject access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-048",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "anomalous"
+    },
+    "expected_tier": "T0_REJECT",
+    "reasoning": "Severe risk across all indicators \u2014 reject access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-049",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T0_REJECT",
+    "reasoning": "Severe risk across all indicators \u2014 reject access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "UNAMB-050",
+    "category": "unambiguous",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "anomalous"
+    },
+    "expected_tier": "T0_REJECT",
+    "reasoning": "Severe risk across all indicators \u2014 reject access.",
+    "difficulty": "easy"
+  },
+  {
+    "scenario_id": "CONFL-001",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Despite stable history, recent anomaly flag requires monitoring. Safety floor enforces T2 max.",
+    "difficulty": "medium"
+  },
+  {
+    "scenario_id": "CONFL-002",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Low auth stability is a strong negative signal despite other good indicators. Safety floor enforces T1.",
+    "difficulty": "medium"
+  },
+  {
+    "scenario_id": "CONFL-003",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "PDU instability with otherwise good profile warrants monitoring but not restriction.",
+    "difficulty": "medium"
+  },
+  {
+    "scenario_id": "CONFL-004",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Volatile traffic with stable auth suggests bursty usage, not malice. Monitor.",
+    "difficulty": "medium"
+  },
+  {
+    "scenario_id": "CONFL-005",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Mixed signals: recent anomaly + suspicious label, but auth is only medium. Monitor closely.",
+    "difficulty": "hard"
+  },
+  {
+    "scenario_id": "CONFL-006",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Suspicious label with moderate indicators \u2014 could be legitimate heavy use. Monitor.",
+    "difficulty": "hard"
+  },
+  {
+    "scenario_id": "CONFL-007",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Auth and PDU both medium \u2014 borderline case. Conservative monitoring appropriate.",
+    "difficulty": "medium"
+  },
+  {
+    "scenario_id": "CONFL-008",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Suspicious behaviour label despite stable metrics \u2014 label may lag. Monitor.",
+    "difficulty": "hard"
+  },
+  {
+    "scenario_id": "CONFL-009",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Low auth stability + suspicious label \u2014 restrict despite stable traffic.",
+    "difficulty": "medium"
+  },
+  {
+    "scenario_id": "CONFL-010",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Recent anomaly flag caps at T2. PDU low is concerning but behaviour label is normal.",
+    "difficulty": "hard"
+  },
+  {
+    "scenario_id": "CONFL-011",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Anomaly flag caps at T2. Good auth/PDU but volatile traffic + suspicious \u2014 monitor.",
+    "difficulty": "hard"
+  },
+  {
+    "scenario_id": "CONFL-012",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Volatile traffic + medium auth creates enough concern for monitoring.",
+    "difficulty": "medium"
+  },
+  {
+    "scenario_id": "CONFL-013",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Low auth + anomaly + suspicious \u2014 multiple red flags override good PDU/traffic.",
+    "difficulty": "hard"
+  },
+  {
+    "scenario_id": "CONFL-014",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "PDU instability + volatile traffic is concerning, but auth is solid. Monitor.",
+    "difficulty": "hard"
+  },
+  {
+    "scenario_id": "CONFL-015",
+    "category": "conflicting",
+    "summary": {
+      "auth_stability": "medium",
+      "pdu_session_stability": "medium",
+      "traffic_pattern": "moderate",
+      "known_slice_usage": [
+        "URLLC"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "suspicious"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "All medium + anomaly flag + URLLC slice request. Anomaly caps at T2.",
+    "difficulty": "hard"
+  },
+  {
+    "scenario_id": "ADVER-001",
+    "category": "adversarial",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T2_MONITORED_ACCESS",
+    "reasoning": "Anomaly flag present despite 'perfect' other fields \u2014 classic injection pattern. Safety floor clips to T2.",
+    "difficulty": "hard"
+  },
+  {
+    "scenario_id": "ADVER-002",
+    "category": "adversarial",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Low auth masked by good other fields \u2014 injection might convince LLM to ignore. Safety floor clips to T1.",
+    "difficulty": "hard"
+  },
+  {
+    "scenario_id": "ADVER-003",
+    "category": "adversarial",
+    "summary": {
+      "auth_stability": "high",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": false,
+      "behaviour_label": "anomalous"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Anomalous behaviour label contradicts stable metrics \u2014 manipulation attempt. Safety floor clips to T1.",
+    "difficulty": "hard"
+  },
+  {
+    "scenario_id": "ADVER-004",
+    "category": "adversarial",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "high",
+      "traffic_pattern": "stable",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "normal"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "Low auth + anomaly \u2014 two red flags masked by good PDU/traffic/label. Safety floor clips to T1.",
+    "difficulty": "hard"
+  },
+  {
+    "scenario_id": "ADVER-005",
+    "category": "adversarial",
+    "summary": {
+      "auth_stability": "low",
+      "pdu_session_stability": "low",
+      "traffic_pattern": "volatile",
+      "known_slice_usage": [
+        "eMBB"
+      ],
+      "recent_anomaly": true,
+      "behaviour_label": "anomalous"
+    },
+    "expected_tier": "T1_RESTRICTED_ACCESS",
+    "reasoning": "All indicators maximally bad \u2014 blatant attack. Should be T0 or T1. Safety floor enforces T1 max.",
+    "difficulty": "hard"
+  }
+]

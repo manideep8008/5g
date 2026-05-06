@@ -1,0 +1,110 @@
+{
+  "full": {
+    "tiers": [
+      "T0_REJECT",
+      "T1_RESTRICTED_ACCESS",
+      "T2_MONITORED_ACCESS",
+      "T3_FULL_ACCESS"
+    ],
+    "matrix": [
+      [
+        24,
+        3,
+        0,
+        0
+      ],
+      [
+        0,
+        60,
+        18,
+        3
+      ],
+      [
+        0,
+        0,
+        60,
+        0
+      ],
+      [
+        0,
+        0,
+        9,
+        33
+      ]
+    ],
+    "rows_are": "predicted",
+    "cols_are": "actual (oracle)"
+  },
+  "rule_without_summary": {
+    "tiers": [
+      "T0_REJECT",
+      "T1_RESTRICTED_ACCESS",
+      "T2_MONITORED_ACCESS",
+      "T3_FULL_ACCESS"
+    ],
+    "matrix": [
+      [
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        24,
+        63,
+        87,
+        36
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ],
+    "rows_are": "predicted",
+    "cols_are": "actual (oracle)"
+  },
+  "single_llm": {
+    "tiers": [
+      "T0_REJECT",
+      "T1_RESTRICTED_ACCESS",
+      "T2_MONITORED_ACCESS",
+      "T3_FULL_ACCESS"
+    ],
+    "matrix": [
+      [
+        24,
+        3,
+        0,
+        0
+      ],
+      [
+        0,
+        60,
+        18,
+        3
+      ],
+      [
+        0,
+        0,
+        60,
+        0
+      ],
+      [
+        0,
+        0,
+        9,
+        33
+      ]
+    ],
+    "rows_are": "predicted",
+    "cols_are": "actual (oracle)"
+  }
+}

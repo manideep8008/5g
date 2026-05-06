@@ -1,0 +1,31 @@
+policy:
+  mode: hybrid  # hybrid | rules_only | llm_only
+
+risk_weights:
+  auth_stability: 0.25
+  pdu_session_stability: 0.20
+  traffic_pattern: 0.20
+  recent_anomaly: 0.20
+  behaviour_label: 0.15
+
+tier_thresholds:
+  T3_FULL_ACCESS: {max_risk: 0.20}
+  T2_MONITORED_ACCESS: {max_risk: 0.50}
+  T1_RESTRICTED_ACCESS: {max_risk: 0.80}
+  T0_REJECT: {min_risk: 0.80}
+
+safety_floor:
+  enabled: true
+  hard_rules:
+    - condition: "recent_anomaly == true"
+      max_tier: T2_MONITORED_ACCESS
+    - condition: "auth_stability == 'low'"
+      max_tier: T1_RESTRICTED_ACCESS
+    - condition: "behaviour_label == 'anomalous'"
+      max_tier: T1_RESTRICTED_ACCESS
+
+llm:
+  model: llama3.1:8b-instruct-q4_K_M
+  temperature: 0.0
+  base_url: http://localhost:11434
+  timeout_sec: 30

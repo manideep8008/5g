@@ -1,0 +1,14 @@
+# HELP upf_traffic_bytes_total Total bytes per UE per direction
+# TYPE upf_traffic_bytes_total counter
+upf_traffic_bytes_total{ue_ip="12.1.1.2",direction="uplink"} 1500000
+upf_traffic_bytes_total{ue_ip="12.1.1.2",direction="downlink"} 8200000
+upf_traffic_bytes_total{ue_ip="12.1.1.3",direction="uplink"} 220
+upf_traffic_bytes_total{ue_ip="12.1.1.3",direction="downlink"} 880
+# HELP upf_traffic_packets_total Total packets per UE per direction
+# TYPE upf_traffic_packets_total counter
+upf_traffic_packets_total{ue_ip="12.1.1.2",direction="uplink"} 1200
+upf_traffic_packets_total{ue_ip="12.1.1.2",direction="downlink"} 5400
+# HELP upf_pfcp_sessions_active Active PFCP sessions
+# TYPE upf_pfcp_sessions_active gauge
+upf_pfcp_sessions_active{ue_ip="12.1.1.2"} 1
+upf_pfcp_sessions_active{ue_ip="12.1.1.3"} 1

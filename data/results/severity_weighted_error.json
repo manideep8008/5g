@@ -1,0 +1,20 @@
+{
+  "full": {
+    "total_penalty": 48,
+    "mean_penalty": 0.2286,
+    "normalized_error": 0.0571,
+    "num_runs": 210
+  },
+  "rule_without_summary": {
+    "total_penalty": 183,
+    "mean_penalty": 0.8714,
+    "normalized_error": 0.2179,
+    "num_runs": 210
+  },
+  "single_llm": {
+    "total_penalty": 48,
+    "mean_penalty": 0.2286,
+    "normalized_error": 0.0571,
+    "num_runs": 210
+  }
+}

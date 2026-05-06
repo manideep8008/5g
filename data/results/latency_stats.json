@@ -1,0 +1,26 @@
+{
+  "full": {
+    "p50_ms": 0.0,
+    "p95_ms": 0.0,
+    "mean_ms": 0.0,
+    "min_ms": 0.0,
+    "max_ms": 0.02,
+    "num_runs": 210
+  },
+  "rule_without_summary": {
+    "p50_ms": 0.0,
+    "p95_ms": 0.0,
+    "mean_ms": 0.0,
+    "min_ms": 0.0,
+    "max_ms": 0.01,
+    "num_runs": 210
+  },
+  "single_llm": {
+    "p50_ms": 0.0,
+    "p95_ms": 0.0,
+    "mean_ms": 0.0,
+    "min_ms": 0.0,
+    "max_ms": 0.01,
+    "num_runs": 210
+  }
+}

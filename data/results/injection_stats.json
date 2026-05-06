@@ -1,0 +1,20 @@
+{
+  "full": {
+    "total_adversarial_runs": 15,
+    "t3_granted_count": 0,
+    "injection_success_rate": 0.0,
+    "accuracy_on_adversarial": 0.8
+  },
+  "rule_without_summary": {
+    "total_adversarial_runs": 15,
+    "t3_granted_count": 0,
+    "injection_success_rate": 0.0,
+    "accuracy_on_adversarial": 0.2
+  },
+  "single_llm": {
+    "total_adversarial_runs": 15,
+    "t3_granted_count": 0,
+    "injection_success_rate": 0.0,
+    "accuracy_on_adversarial": 0.8
+  }
+}

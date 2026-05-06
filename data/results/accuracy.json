@@ -1,0 +1,50 @@
+{
+  "full": {
+    "overall_accuracy": 0.8429,
+    "total_runs": 210,
+    "correct_runs": 177,
+    "accuracy_by_tier": {
+      "T3_FULL_ACCESS": 0.9167,
+      "T2_MONITORED_ACCESS": 0.6897,
+      "T1_RESTRICTED_ACCESS": 0.9524,
+      "T0_REJECT": 1.0
+    },
+    "accuracy_by_category": {
+      "unambiguous": 0.9,
+      "conflicting": 0.6667,
+      "adversarial": 0.8
+    }
+  },
+  "rule_without_summary": {
+    "overall_accuracy": 0.4143,
+    "total_runs": 210,
+    "correct_runs": 87,
+    "accuracy_by_tier": {
+      "T3_FULL_ACCESS": 0.0,
+      "T2_MONITORED_ACCESS": 1.0,
+      "T1_RESTRICTED_ACCESS": 0.0,
+      "T0_REJECT": 0.0
+    },
+    "accuracy_by_category": {
+      "unambiguous": 0.32,
+      "conflicting": 0.8,
+      "adversarial": 0.2
+    }
+  },
+  "single_llm": {
+    "overall_accuracy": 0.8429,
+    "total_runs": 210,
+    "correct_runs": 177,
+    "accuracy_by_tier": {
+      "T3_FULL_ACCESS": 0.9167,
+      "T2_MONITORED_ACCESS": 0.6897,
+      "T1_RESTRICTED_ACCESS": 0.9524,
+      "T0_REJECT": 1.0
+    },
+    "accuracy_by_category": {
+      "unambiguous": 0.9,
+      "conflicting": 0.6667,
+      "adversarial": 0.8
+    }
+  }
+}

@@ -1,0 +1,35 @@
+collector:
+  amf_log_path: /var/log/oai/amf.log
+  upf_prometheus_url: http://localhost:9090
+  scrape_interval_sec: 10
+
+identity:
+  hmac_algorithm: sha256
+
+bucketization:
+  auth_stability:
+    high: {max_failure_rate: 0.05}
+    medium: {max_failure_rate: 0.20}
+    low: {min_failure_rate: 0.20}
+  pdu_session_stability:
+    high: {max_failure_rate: 0.05}
+    medium: {max_failure_rate: 0.20}
+    low: {min_failure_rate: 0.20}
+  traffic_pattern:
+    stable: {max_spike_rate: 0.10}
+    moderate: {max_spike_rate: 0.30}
+    volatile: {min_spike_rate: 0.30}
+  behaviour_label:
+    normal: {max_overall_risk: 0.20}
+    suspicious: {max_overall_risk: 0.50}
+    anomalous: {min_overall_risk: 0.50}
+
+summary:
+  default_window_sec: 86400
+  max_requested_fields:
+    - auth_stability
+    - pdu_session_stability
+    - traffic_pattern
+    - known_slice_usage
+    - recent_anomaly
+    - behaviour_label

@@ -1,0 +1,12 @@
+2025-01-05 01:02:20.000 [amf_app] [info] New UE Registration Request
+2025-01-05 01:02:20.100 [amf_app] [info] UE Authentication Started for IMSI: 208950000000031
+2025-01-05 01:02:20.500 [amf_app] [info] UE Authentication Successful for IMSI: 208950000000031
+2025-01-05 01:02:21.100 [amf_app] [info] IMSI: 208950000000031, 5GMM State: REGISTERED, GUTI: 208950000000031, Cell ID: 0x00000001
+2025-01-05 01:02:25.000 [amf_app] [info] PDU Session Establishment Request received
+2025-01-05 01:02:25.300 [amf_app] [info] PDU Session Establishment Accept sent to UE
+2025-01-05 01:02:35.000 [amf_app] [info] Connected UEs: 1, Active PDU Sessions: 1, Connected gNBs: 1
+2025-01-05 01:02:50.000 [amf_app] [info] UE Context Release Request received from gNB
+2025-01-05 01:02:50.500 [amf_app] [info] UE Context Release Complete received from gNB
+2025-01-05 01:00:08.957 [amf_sbi] [debug] Send NF Update to NRF, Msg body [...]
+2025-01-05 01:03:10.000 [amf_app] [info] No UEs currently connected
+2025-01-05 01:03:20.000 [amf_app] [info] gNB-Eurecom-CU (ID: 0x000000E0) Status: Connected PLMN: 20895

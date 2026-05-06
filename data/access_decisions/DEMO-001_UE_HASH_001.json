@@ -1,0 +1,26 @@
+{
+  "request_id": "DEMO-001",
+  "ue_pseudonym": "UE_HASH_001",
+  "final_tier": "T3_FULL_ACCESS",
+  "risk_score": 0.0,
+  "reason": "Risk score 0.00 maps to T3_FULL_ACCESS",
+  "policy_engine_metadata": {
+    "llm_model_id": "rules_only",
+    "llm_temperature": 0.0,
+    "llm_proposed_tier": null,
+    "safety_floor_clipped": false,
+    "safety_floor_reason": null,
+    "deterministic_max_tier": "T3_FULL_ACCESS"
+  },
+  "simulated_enforcement": {
+    "bandwidth_cap_mbps": null,
+    "monitoring_interval_sec": null,
+    "allowed_services": [
+      "standard_data",
+      "voice",
+      "video",
+      "iot"
+    ]
+  },
+  "decided_at": "2026-05-05T20:00:21.014981Z"
+}
