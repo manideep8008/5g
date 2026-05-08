@@ -4,15 +4,10 @@ set -euo pipefail
 # Start IBN-ZTA services alongside a running OAI CN5G core.
 #
 # Prerequisites:
-#   1. OAI core is up:  docker compose up -d
-#   2. .env file exists (copy from .env.example)
-#   3. Python venv active with requirements.txt installed
-#   4. UPF metrics enabled in conf/config.yaml:
-#        register_nf:
-#          general:
-#            metrics:
-#              enabled: true
-#              port: 9090
+#   1. OAI core is up:  cd ../oai-cn5g && docker compose up -d
+#   2. IBN-ZTA infra:   docker compose up -d  (postgres + redis)
+#   3. .env file exists (copy from .env.example)
+#   4. Python venv active with requirements.txt installed
 #
 # Usage:
 #   ./scripts/start_with_oai.sh              # collector + both APIs
