@@ -36,7 +36,7 @@ class UpfSnapshot:
     pfcp_session_active: bool
 
 
-def fetch_metrics(upf_url: str = "http://oai-upf:9090/metrics", timeout_s: float = 2.0) -> str:
+def fetch_metrics(upf_url: str = "http://localhost:9090/metrics", timeout_s: float = 2.0) -> str:
     resp = httpx.get(upf_url, timeout=timeout_s)
     resp.raise_for_status()
     return resp.text

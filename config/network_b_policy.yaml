@@ -25,7 +25,7 @@ safety_floor:
       max_tier: T1_RESTRICTED_ACCESS
 
 llm:
-  model: llama3.1:8b-instruct-q4_K_M
+  model: gpt-oss:120b-cloud
   temperature: 0.0
   base_url: http://localhost:11434
   timeout_sec: 30

@@ -1,6 +1,6 @@
 collector:
-  amf_log_path: /var/log/oai/amf.log
-  upf_prometheus_url: http://localhost:9090
+  amf_log_path: data/logs/amf_live.log
+  upf_prometheus_url: http://localhost:9090/metrics
   scrape_interval_sec: 10
 
 identity:

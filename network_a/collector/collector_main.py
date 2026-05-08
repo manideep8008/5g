@@ -23,8 +23,8 @@ from network_a.identity.identity_mapper import get_or_create_pseudonym
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)s %(message)s")
 
-DEFAULT_AMF_LOG = "/var/log/oai/amf.log"
-DEFAULT_UPF_URL = "http://oai-upf:9090/metrics"
+DEFAULT_AMF_LOG = "data/logs/amf_live.log"
+DEFAULT_UPF_URL = "http://localhost:9090/metrics"
 SCRAPE_INTERVAL = 10
 
 
