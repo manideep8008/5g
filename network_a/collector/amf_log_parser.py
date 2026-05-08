@@ -44,7 +44,7 @@ class AmfEvent:
 
 
 _LINE_RE = re.compile(
-    r"^(?P<ts>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\s+"
+    r"^\[?(?P<ts>\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}\.\d{3})\]?\s+"
     r"\[(?P<component>[\w_]+)\]\s+"
     r"\[(?P<level>\w+)\]\s+"
     r"(?P<msg>.*)$"
@@ -53,21 +53,39 @@ _LINE_RE = re.compile(
 _PATTERNS: list[tuple[re.Pattern, AmfEventType]] = [
     (re.compile(r"^New UE Registration Request"),
      AmfEventType.REGISTRATION_REQUEST),
+    (re.compile(r"Received\s+InitialUEMessage", re.IGNORECASE),
+     AmfEventType.REGISTRATION_REQUEST),
     (re.compile(r"^UE Authentication Started for IMSI:\s*(?P<imsi>\d+)"),
      AmfEventType.AUTH_STARTED),
+    (re.compile(r"Authentication\s+(?:with|procedure|vector).*?(?:SUPI|IMSI)[:\s]+(?P<imsi>\d+)", re.IGNORECASE),
+     AmfEventType.AUTH_STARTED),
     (re.compile(r"^UE Authentication Successful for IMSI:\s*(?P<imsi>\d+)"),
+     AmfEventType.AUTH_SUCCESS),
+    (re.compile(r"Authentication\s+(?:successful|success).*?(?:SUPI|IMSI)[:\s]+(?P<imsi>\d+)", re.IGNORECASE),
      AmfEventType.AUTH_SUCCESS),
     (re.compile(
         r"^IMSI:\s*(?P<imsi>\d+),\s*5GMM State:\s*REGISTERED.*"
         r"Cell ID:\s*(?P<cell_id>0x[0-9a-fA-F]+)"
     ), AmfEventType.REGISTRATION_COMPLETE),
+    (re.compile(r"5GMM[- ]?state.*REGISTERED.*?(?:SUPI|IMSI)[:\s]+(?P<imsi>\d+)", re.IGNORECASE),
+     AmfEventType.REGISTRATION_COMPLETE),
+    (re.compile(r"Registration\s+(?:Complete|Accept).*?(?:SUPI|IMSI)[:\s]+(?P<imsi>\d+)", re.IGNORECASE),
+     AmfEventType.REGISTRATION_COMPLETE),
     (re.compile(r"^PDU Session Establishment Request received"),
+     AmfEventType.PDU_REQUEST),
+    (re.compile(r"Received.*PDU\s+Session\s+(?:Establishment\s+)?Request", re.IGNORECASE),
      AmfEventType.PDU_REQUEST),
     (re.compile(r"^PDU Session Establishment Accept sent to UE"),
      AmfEventType.PDU_ACCEPT),
+    (re.compile(r"PDU\s+Session\s+(?:Establishment\s+)?Accept", re.IGNORECASE),
+     AmfEventType.PDU_ACCEPT),
     (re.compile(r"^UE Context Release Request received from gNB"),
      AmfEventType.CONTEXT_RELEASE_REQUEST),
+    (re.compile(r"UE\s+Context\s+Release\s+(?:Request|Command)", re.IGNORECASE),
+     AmfEventType.CONTEXT_RELEASE_REQUEST),
     (re.compile(r"^UE Context Release Complete received from gNB"),
+     AmfEventType.CONTEXT_RELEASE_COMPLETE),
+    (re.compile(r"UE\s+Context\s+Release\s+Complete", re.IGNORECASE),
      AmfEventType.CONTEXT_RELEASE_COMPLETE),
     (re.compile(
         r"^Connected UEs:\s*(?P<ues>\d+),\s*Active PDU Sessions:\s*(?P<sessions>\d+),\s*Connected gNBs:\s*(?P<gnbs>\d+)"
@@ -77,10 +95,14 @@ _PATTERNS: list[tuple[re.Pattern, AmfEventType]] = [
     (re.compile(
         r"^gNB-\S+\s+\(ID:\s*(?P<gnb_id>0x[0-9a-fA-F]+)\)\s+Status:\s*(?P<status>\w+)\s+PLMN:\s*(?P<plmn>[\d,]+)"
     ), AmfEventType.GNB_STATUS),
+    (re.compile(r"Received\s+NG\s+Setup\s+Request", re.IGNORECASE),
+     AmfEventType.GNB_STATUS),
 ]
 
 _FAILURE_PATTERNS: list[tuple[re.Pattern, AmfEventType]] = [
     (re.compile(r"^UE Authentication Failed for IMSI:\s*(?P<imsi>\d+)"),
+     AmfEventType.AUTH_FAILURE),
+    (re.compile(r"Authentication\s+(?:fail|reject).*?(?:SUPI|IMSI)[:\s]+(?P<imsi>\d+)", re.IGNORECASE),
      AmfEventType.AUTH_FAILURE),
     (re.compile(r"Registration\s+Reject", re.IGNORECASE),
      AmfEventType.REGISTRATION_REJECT),
@@ -90,6 +112,7 @@ _FAILURE_PATTERNS: list[tuple[re.Pattern, AmfEventType]] = [
 
 
 def _parse_ts(raw: str) -> datetime:
+    raw = raw.replace("T", " ")
     return datetime.strptime(raw, "%Y-%m-%d %H:%M:%S.%f").replace(tzinfo=timezone.utc)
 
 
@@ -102,23 +125,34 @@ def parse_line(line: str) -> AmfEvent | None:
     ts = _parse_ts(m.group("ts"))
     msg = m.group("msg").strip()
 
-    if m.group("component") != "amf_app":
+    if not m.group("component").startswith("amf"):
         return None
 
     for pat, etype in _PATTERNS + _FAILURE_PATTERNS:
-        m2 = pat.match(msg)
+        m2 = pat.search(msg)
         if m2:
             gd = m2.groupdict()
+            imsi = gd.get("imsi")
+            if not imsi:
+                imsi = _extract_supi(msg)
             return AmfEvent(
                 timestamp=ts,
                 event_type=etype,
-                imsi=gd.get("imsi"),
+                imsi=imsi,
                 cell_id=gd.get("cell_id"),
                 extra={k: v for k, v in gd.items() if k not in {"imsi", "cell_id"} and v is not None},
                 raw_line=line,
             )
 
     return None
+
+
+_SUPI_RE = re.compile(r"(?:SUPI|supi)[:\s]*(?:imsi-)?(\d{15})")
+
+
+def _extract_supi(msg: str) -> str | None:
+    m = _SUPI_RE.search(msg)
+    return m.group(1) if m else None
 
 
 def parse_log_lines(lines: list[str]) -> list[AmfEvent]:
