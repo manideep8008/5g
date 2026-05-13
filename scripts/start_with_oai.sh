@@ -78,8 +78,16 @@ AMF_LOG_PID=$!
 sleep 1
 
 # ─── Start Collector (optional) ───────────────────────────────
+# When Postgres is unavailable the API embeds the collector as a
+# background task so they share the same in-memory store.  In that
+# case we skip the standalone collector to avoid running two.
 
-if [ "$SKIP_COLLECTOR" = false ]; then
+POSTGRES_AVAILABLE=false
+if docker ps --format '{{.Names}}' 2>/dev/null | grep -q "ibn-zta-postgres"; then
+    POSTGRES_AVAILABLE=true
+fi
+
+if [ "$SKIP_COLLECTOR" = false ] && [ "$POSTGRES_AVAILABLE" = true ]; then
     UPF_URL="${UPF_PROMETHEUS_URL:-http://localhost:9090/metrics}"
     echo "Starting Behaviour Collector (amf=$AMF_LOG, upf=$UPF_URL)..."
     python3 -m network_a.collector.collector_main \
@@ -87,6 +95,8 @@ if [ "$SKIP_COLLECTOR" = false ]; then
         --upf-url "$UPF_URL" &
     PIDS+=($!)
     sleep 1
+elif [ "$SKIP_COLLECTOR" = false ]; then
+    echo "Collector will run embedded in Network A API (in-memory mode)"
 fi
 
 # ─── Start Network A API ──────────────────────────────────────
