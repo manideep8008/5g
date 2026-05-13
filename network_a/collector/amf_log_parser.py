@@ -22,6 +22,7 @@ class AmfEventType(str, Enum):
     AUTH_STARTED = "auth_started"
     AUTH_SUCCESS = "auth_success"
     AUTH_FAILURE = "auth_failure"
+    AUTH_SQN_RESYNC = "auth_sqn_resync"
     REGISTRATION_COMPLETE = "registration_complete"
     REGISTRATION_REJECT = "registration_reject"
     PDU_REQUEST = "pdu_request"
@@ -111,6 +112,15 @@ _PATTERNS: list[tuple[re.Pattern, AmfEventType]] = [
 
     (re.compile(r"Received UE Context Release Complete message"),
      AmfEventType.CONTEXT_RELEASE_COMPLETE),
+
+    # SQN resynchronization — normal 5G-AKA procedure (5GMM cause 0x15 / AUTS),
+    # NOT a real auth failure.  Must appear before _FAILURE_PATTERNS so that
+    # "Received Authentication Failure message, handling..." is caught here
+    # instead of being misclassified as AUTH_FAILURE.
+    (re.compile(r"Received Authentication Failure message.*handling"),
+     AmfEventType.AUTH_SQN_RESYNC),
+    (re.compile(r"SQN re-?synchroni[sz]ation", re.IGNORECASE),
+     AmfEventType.AUTH_SQN_RESYNC),
 ]
 
 _FAILURE_PATTERNS: list[tuple[re.Pattern, AmfEventType]] = [

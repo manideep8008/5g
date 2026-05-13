@@ -38,6 +38,12 @@ async def tail_file(path: Path) -> None:
             await asyncio.sleep(2)
 
     session_events: dict[str, list] = {}
+    # Track the "current" IMSI across consecutive log lines.
+    # Many OAI AMF events (Context Release, Security Mode Complete, etc.)
+    # don't include the IMSI in the log line itself — they rely on being
+    # part of a sequential procedure for a single UE.  We propagate the
+    # most-recently-seen IMSI to those events so they aren't dropped.
+    current_imsi: str | None = None
 
     with open(path) as f:
         f.seek(0, 2)
@@ -63,11 +69,26 @@ async def tail_file(path: Path) -> None:
             if event is None:
                 continue
 
-            imsi = event.imsi
-            if not imsi:
+            # Skip periodic gNB status lines — not session events
+            if event.event_type == AmfEventType.GNB_STATUS:
                 continue
 
-            logger.debug("Event: %s for IMSI %s", event.event_type.value, imsi)
+            # Update IMSI tracking from any event that carries an inline IMSI
+            if event.imsi:
+                current_imsi = event.imsi
+
+            # Resolve IMSI: prefer inline, fall back to tracked context
+            imsi = event.imsi or current_imsi
+            if not imsi:
+                logger.debug("Skipping %s — no IMSI context yet", event.event_type.value)
+                continue
+
+            # UE table status is useful for IMSI tracking but is a periodic
+            # status dump, not a session lifecycle event — don't add to session
+            if event.event_type == AmfEventType.UE_TABLE_STATUS:
+                continue
+
+            logger.info("Event: %s for IMSI %s", event.event_type.value, imsi)
             session_events.setdefault(imsi, []).append(event)
 
 

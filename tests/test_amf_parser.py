@@ -22,6 +22,10 @@ SAMPLE_NAS_LINE = "[2026-05-13 18:42:20.778] [nas] [debug] Decoding 5GSMobilityI
 SAMPLE_HEARTBEAT = "[2026-05-13 18:42:27.672] [amf_sbi] [debug] Send NF Update to NRF"
 SAMPLE_GARBAGE = "some random text that is not a log line"
 
+# SQN resync — normal 5G-AKA procedure, NOT a real auth failure
+SAMPLE_SQN_RESYNC = "[2026-05-13 18:42:20.850] [amf_n1] [debug] Received Authentication Failure message, handling..."
+SAMPLE_SQN_RESYNC_ALT = "[2026-05-13 18:42:20.851] [amf_n1] [debug] Handling SQN re-synchronization..."
+
 
 class TestAmfLogParser:
     def test_parse_registration_request(self):
@@ -82,6 +86,18 @@ class TestAmfLogParser:
         ev = parse_line(SAMPLE_PDU_ACCEPT)
         assert ev is not None
         assert ev.event_type == AmfEventType.PDU_ACCEPT
+
+    def test_sqn_resync_not_auth_failure(self):
+        """SQN resync (5GMM cause 0x15 / AUTS) must NOT be classified as AUTH_FAILURE."""
+        ev = parse_line(SAMPLE_SQN_RESYNC)
+        assert ev is not None
+        assert ev.event_type == AmfEventType.AUTH_SQN_RESYNC
+        assert ev.event_type != AmfEventType.AUTH_FAILURE
+
+    def test_sqn_resync_alt(self):
+        ev = parse_line(SAMPLE_SQN_RESYNC_ALT)
+        assert ev is not None
+        assert ev.event_type == AmfEventType.AUTH_SQN_RESYNC
 
     def test_parse_context_release_request(self):
         ev = parse_line(SAMPLE_CTX_REL_REQ)
