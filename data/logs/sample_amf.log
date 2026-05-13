@@ -1,12 +1,23 @@
-2025-01-05 01:02:20.000 [amf_app] [info] New UE Registration Request
-2025-01-05 01:02:20.100 [amf_app] [info] UE Authentication Started for IMSI: 208950000000031
-2025-01-05 01:02:20.500 [amf_app] [info] UE Authentication Successful for IMSI: 208950000000031
-2025-01-05 01:02:21.100 [amf_app] [info] IMSI: 208950000000031, 5GMM State: REGISTERED, GUTI: 208950000000031, Cell ID: 0x00000001
-2025-01-05 01:02:25.000 [amf_app] [info] PDU Session Establishment Request received
-2025-01-05 01:02:25.300 [amf_app] [info] PDU Session Establishment Accept sent to UE
-2025-01-05 01:02:35.000 [amf_app] [info] Connected UEs: 1, Active PDU Sessions: 1, Connected gNBs: 1
-2025-01-05 01:02:50.000 [amf_app] [info] UE Context Release Request received from gNB
-2025-01-05 01:02:50.500 [amf_app] [info] UE Context Release Complete received from gNB
-2025-01-05 01:00:08.957 [amf_sbi] [debug] Send NF Update to NRF, Msg body [...]
-2025-01-05 01:03:10.000 [amf_app] [info] No UEs currently connected
-2025-01-05 01:03:20.000 [amf_app] [info] gNB-Eurecom-CU (ID: 0x000000E0) Status: Connected PLMN: 20895
+[2026-05-13 18:42:20.768] [amf_n1] [debug] Start to run Registration Procedure
+[2026-05-13 18:42:20.778] [amf_n1] [debug] Received IMSI 001010000000001
+[2026-05-13 18:42:20.778] [amf_n1] [debug] Identity Response: SUPI imsi-001010000000001
+[2026-05-13 18:42:20.778] [amf_n1] [debug] Start to generate Authentication Vectors
+[2026-05-13 18:42:20.779] [amf_sbi] [info] Receive UE Authentication Request message, handling ...
+[2026-05-13 18:42:20.779] [amf_sbi] [info] Send HTTP message to http://oai-ausf:8080/nausf-auth/v1/ue-authentications
+[2026-05-13 18:42:20.795] [amf_sbi] [info] Get response with HTTP code (201)
+[2026-05-13 18:42:20.795] [amf_n1] [debug] Sending Authentication Request with RAND
+[2026-05-13 18:42:20.893] [amf_n1] [debug] Received Authentication Response message, handling...
+[2026-05-13 18:42:20.901] [amf_n1] [debug] Got ConfirmationDataResponse from AUSF: {"authResult":"AUTHENTICATION_SUCCESS","supi":"imsi-001010000000001"}
+[2026-05-13 18:42:20.901] [amf_n1] [debug] Authentication successful by network!
+[2026-05-13 18:42:20.913] [amf_n1] [debug] Received Security Mode Complete message, handling...
+[2026-05-13 18:42:20.918] [amf_n1] [info] UE (IMSI 001010000000001, GUTI 001010100411274052588, current RAN ID 2, current AMF ID 2) has been registered to the network
+[2026-05-13 18:42:20.918] [amf_app] [debug] The UE's state (IMSI 001010000000001, State 5GMM-REGISTERED) has been successfully updated!
+   |    1   |              Connected             |               0x0E00               |               gNB-OAI              |               001,01               |
+   |    1   |   5GMM-REGISTERED  |             001010000000001            |00101010041127405258|        0x02        |        0x02        |       001,01       |      0000e014e     |
+[2026-05-13 18:42:21.238] [amf_n1] [debug] Received UL NAS Transport message, handling...
+[2026-05-13 18:42:21.240] [amf_sbi] [debug] Handle PDU Session Establishment Request (SUPI imsi-001010000000001, PDU Session ID 5)
+[2026-05-13 18:42:21.245] [amf_n2] [info] Received PDU Session Resource Setup Request message, handling
+[2026-05-13 18:42:21.318] [ngap] [debug] Handle PDU Session Resource Setup Response
+[2026-05-13 18:42:55.427] [amf_n2] [info] Received UE Context Release Request message, handling
+[2026-05-13 18:42:55.428] [amf_n2] [info] Received UE Context Release Complete message, handling
+[2026-05-13 18:42:27.672] [amf_sbi] [debug] Send NF Update to NRF
