@@ -20,8 +20,8 @@ The second network feeds this summary into a **hybrid LLM + safety floor policy 
 │              │                         │    │         │                          │
 │              v                         │    │         v                          │
 │  Behaviour Collector                   │    │  Hybrid Policy Engine              │
-│   • AMF log parser (registration,      │    │   1. Deterministic risk score      │
-│     auth, PDU sessions)                │    │   2. LLM proposes tier + reasoning │
+│   • AMF log parser (14 event types,    │    │   1. Deterministic risk score      │
+│     real OAI CN5G v2.2.1 format)       │    │   2. LLM proposes tier + reasoning │
 │   • UPF Prometheus scraper (traffic)   │    │   3. Safety floor clips if needed  │
 │              │                         │    │         │                          │
 │              v                         │    │         v                          │
@@ -110,13 +110,48 @@ docker compose up -d              # Postgres + Redis
 
 # 5. Start collector + APIs
 ./scripts/start_with_oai.sh
+
+# Alternative: run without Postgres (in-memory fallback)
+# Skip step 4's docker compose — the API auto-detects the missing DB
+# and embeds the collector in the same process.
+./scripts/start_with_oai.sh
 ```
 
 This starts:
 - **AMF log capture** — pipes `docker logs oai-amf` to a file
-- **Behaviour Collector** — tails AMF log + scrapes UPF Prometheus at `:9090`
+- **Behaviour Collector** — tails AMF log + scrapes UPF Prometheus at `:9090`. When Postgres is unavailable, the collector runs embedded inside the Network A API process so both share the same in-memory store.
 - **Network A API** on `:8001` — serves behavioural summaries
 - **Network B API** on `:8002` — makes access tier decisions
+
+## Demo: Seed Scenarios
+
+If you don't have a real UE attached (or want repeatable demo data), seed three simulated UE profiles that trigger different classification tiers:
+
+```bash
+curl -X POST http://localhost:8001/admin/seed-scenarios | python3 -m json.tool
+```
+
+This creates:
+
+| Pseudonym | Profile | Expected Tier |
+|-----------|---------|---------------|
+| `UE_SIM_NORMAL` | Clean — zero failures, stable traffic | T3_FULL_ACCESS |
+| `UE_SIM_SUSPICIOUS` | Moderate auth failures + traffic spikes | T2_MONITORED_ACCESS |
+| `UE_SIM_ANOMALOUS` | High failure rates + active risk flags | T0_REJECT |
+
+Then request a summary and access decision:
+
+```bash
+# Get behavioural summary from Network A
+curl -X POST http://localhost:8001/v1/summary/request \
+  -H "Content-Type: application/json" \
+  -d '{"ue_pseudonym": "UE_SIM_SUSPICIOUS", "requesting_network": "Network_B"}'
+
+# Get access tier decision from Network B
+curl -X POST http://localhost:8002/v1/access/request \
+  -H "Content-Type: application/json" \
+  -d '{"ue_pseudonym": "UE_SIM_SUSPICIOUS", "requesting_network": "Network_B"}'
+```
 
 ## Testing
 
@@ -145,6 +180,7 @@ python3 -m experiments.generate_results
 | Method | Path | Description |
 |--------|------|-------------|
 | POST | `/v1/summary/request` | Returns privacy-preserving behavioural summary |
+| POST | `/admin/seed-scenarios` | Seeds 3 simulated UEs (normal/suspicious/anomalous) for demo |
 | GET | `/v1/health` | Health check |
 
 ### Network B (Policy Engine) — `:8002`
