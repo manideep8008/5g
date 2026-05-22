@@ -105,12 +105,44 @@ class PolicyEngineMetadata(BaseModel):
     safety_floor_clipped: bool = False
     safety_floor_reason: str | None = None
     deterministic_max_tier: str
+    rag_enabled: bool = False
+    rag_adequate: bool | None = None
 
 
 class SimulatedEnforcement(BaseModel):
     bandwidth_cap_mbps: int | None = None
     monitoring_interval_sec: int | None = None
     allowed_services: list[str] = Field(default_factory=lambda: ["standard_data"])
+
+
+SourceType = Literal["policy", "precedent", "principle"]
+
+
+class EvidenceSnippet(BaseModel):
+    snippet_id: str
+    source_type: SourceType
+    source_id: str
+    source_title: str
+    content: str
+    similarity: float = Field(ge=0.0, le=1.0)
+    metadata: dict[str, str] = Field(default_factory=dict)
+
+
+class AdequacyReport(BaseModel):
+    facet_coverage: dict[str, int]
+    distinct_facets: int
+    min_facets_required: int
+    adequate: bool
+    expansion_triggered: bool = False
+    notes: list[str] = Field(default_factory=list)
+
+
+class EvidenceBundle(BaseModel):
+    bundle_id: str
+    retrieved_at: datetime
+    query_text: str
+    snippets: list[EvidenceSnippet] = Field(default_factory=list)
+    adequacy: AdequacyReport
 
 
 class AccessDecision(BaseModel):
@@ -122,3 +154,5 @@ class AccessDecision(BaseModel):
     policy_engine_metadata: PolicyEngineMetadata
     simulated_enforcement: SimulatedEnforcement
     decided_at: datetime
+    summary: UeBehaviouralSummary | None = None
+    evidence_bundle: EvidenceBundle | None = None

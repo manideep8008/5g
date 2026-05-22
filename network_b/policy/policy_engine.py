@@ -7,6 +7,7 @@ from pathlib import Path
 import yaml
 
 from network_a.summary.summary_schema import (
+    EvidenceBundle,
     PolicyEngineMetadata,
     Tier,
     UeBehaviouralSummary,
@@ -14,6 +15,7 @@ from network_a.summary.summary_schema import (
 from network_b.policy.llm_client import LlmConfig, LlmProposal, call_llm, load_llm_config
 from network_b.policy.risk_score import compute_risk_score
 from network_b.policy.tier_mapper import apply_safety_floor, risk_to_max_tier
+from network_b.rag.retriever import Retriever
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +28,7 @@ class PolicyDecision:
     risk_score: float
     reason: str
     metadata: PolicyEngineMetadata
+    evidence: EvidenceBundle | None = None
 
 
 def _load_policy_mode(config_path: Path | None = None) -> str:
@@ -67,27 +70,53 @@ async def decide_hybrid(
     llm_config: LlmConfig | None = None,
     requested_slice: str = "eMBB",
     requested_service: str = "standard_data",
+    retriever: Retriever | None = None,
 ) -> PolicyDecision:
     risk = compute_risk_score(summary)
     deterministic_tier = risk_to_max_tier(risk)
 
     cfg = llm_config or load_llm_config()
+
+    evidence: EvidenceBundle | None = None
+    if retriever is not None:
+        try:
+            evidence = await retriever.retrieve(
+                summary,
+                requested_slice=requested_slice,
+                requested_service=requested_service,
+            )
+        except Exception as exc:  # noqa: BLE001 — RAG is best-effort
+            logger.warning("RAG retrieval failed (%s); proceeding without evidence", exc)
+            evidence = None
+
     proposal = await call_llm(
         summary,
         config=cfg,
         requested_slice=requested_slice,
         requested_service=requested_service,
+        evidence=evidence,
     )
 
     if proposal is None:
         logger.warning("LLM unavailable, falling back to rules-only")
-        return decide(summary)
+        rules_decision = decide(summary)
+        # Attach the evidence we did retrieve, if any — useful for audit.
+        return PolicyDecision(
+            tier=rules_decision.tier,
+            risk_score=rules_decision.risk_score,
+            reason=rules_decision.reason,
+            metadata=rules_decision.metadata,
+            evidence=evidence,
+        )
 
     proposed_tier = proposal.proposed_tier
     final_tier, clipped, clip_reason = apply_safety_floor(proposed_tier, summary)
 
     if clipped:
-        reason = f"LLM proposed {proposed_tier.value} ({proposal.reasoning}), but safety floor applied: {clip_reason}"
+        reason = (
+            f"LLM proposed {proposed_tier.value} ({proposal.reasoning}), "
+            f"but safety floor applied: {clip_reason}"
+        )
     else:
         reason = f"LLM decided {final_tier.value}: {proposal.reasoning}"
 
@@ -98,6 +127,8 @@ async def decide_hybrid(
         safety_floor_clipped=clipped,
         safety_floor_reason=clip_reason,
         deterministic_max_tier=deterministic_tier.value,
+        rag_enabled=evidence is not None,
+        rag_adequate=evidence.adequacy.adequate if evidence is not None else None,
     )
 
     return PolicyDecision(
@@ -105,6 +136,7 @@ async def decide_hybrid(
         risk_score=risk,
         reason=reason,
         metadata=metadata,
+        evidence=evidence,
     )
 
 
@@ -114,6 +146,7 @@ async def decide_auto(
     llm_config: LlmConfig | None = None,
     requested_slice: str = "eMBB",
     requested_service: str = "standard_data",
+    retriever: Retriever | None = None,
 ) -> PolicyDecision:
     mode = _load_policy_mode(config_path)
 
@@ -123,6 +156,7 @@ async def decide_auto(
             llm_config=llm_config,
             requested_slice=requested_slice,
             requested_service=requested_service,
+            retriever=retriever,
         )
 
     return decide(summary)
