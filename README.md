@@ -21,8 +21,9 @@ The second network feeds this summary into a **hybrid LLM + safety floor policy 
 │              v                         │    │         v                          │
 │  Behaviour Collector                   │    │  Hybrid Policy Engine              │
 │   • AMF log parser (14 event types,    │    │   1. Deterministic risk score      │
-│     real OAI CN5G v2.2.1 format)       │    │   2. LLM proposes tier + reasoning │
-│   • UPF Prometheus scraper (traffic)   │    │   3. Safety floor clips if needed  │
+│     real OAI CN5G v2.2.1 format)       │    │   2. RAG retrieves policy context  │
+│   • UPF Prometheus scraper (traffic)   │    │   3. LLM proposes tier + reasoning │
+│              │                         │    │   4. Safety floor clips if needed  │
 │              │                         │    │         │                          │
 │              v                         │    │         v                          │
 │  Summary Generator                     │    │  Decision: tier + audit trail      │
@@ -41,6 +42,8 @@ The second network feeds this summary into a **hybrid LLM + safety floor policy 
 - **No raw data crosses the network boundary.** Summaries contain only bucketed labels (`auth_stability: "high"`, `traffic_pattern: "volatile"`). Schema is allowlist-enforced server-side.
 - **Identity is pseudonymous.** IMSI is never shared — only `UE_HASH_*` via HMAC-SHA256.
 - **LLM can tighten but never loosen.** The deterministic safety floor provides a hard upper bound on permissiveness, defending against prompt injection.
+- **LLM decisions are grounded.** A RAG layer retrieves the most relevant policy snippets from a local knowledge base and supplies them to the LLM as context, so reasoning cites concrete policy rather than free-form guesses.
+- **Storage degrades gracefully.** Network A speaks to a `StorageBackend` Protocol with two interchangeable implementations — `PostgresStorage` (production) and `InMemoryStorage` (dev without Docker). Same contract, no branching at call sites.
 - **Every disclosure is audit-logged** in Postgres.
 
 ## Project Structure
@@ -56,15 +59,18 @@ IBN-ZTA-implementaion/           # This repo — research code only
 │   ├── summary/                 # Bucketization, allowlist, summary generator
 │   └── api/                     # FastAPI on :8001
 ├── network_b/
-│   ├── policy/                  # Risk score, LLM client, tier mapper
+│   ├── collector/               # Attachment watcher (triggers access requests)
+│   ├── policy/                  # Hybrid policy engine, LLM client, safety floor
+│   ├── rag/                     # Knowledge base, embeddings, retriever, vector store
 │   ├── decision/                # Decision service, audit logger
 │   └── api/                     # FastAPI on :8002
 ├── experiments/                 # Oracle dataset, evaluation runner, results
-├── baselines/                   # rule_without_summary, single_llm
-├── tests/                       # 175 tests
-├── config/                      # Bucketization thresholds, LLM config
+├── baselines/                   # rule_without_summary, single_llm_decision
+├── tests/                       # 223 tests
+├── config/                      # Bucketization thresholds, LLM config, RAG policies
 └── scripts/
     ├── start_with_oai.sh        # Start collector + both APIs
+    ├── build_knowledge_base.py  # Build RAG vector store from policy docs
     ├── run_demo.sh              # End-to-end demo
     └── run_evaluation.sh        # Full evaluation run
 ```
@@ -108,7 +114,10 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 docker compose up -d              # Postgres + Redis
 
-# 5. Start collector + APIs
+# 5. Build the RAG knowledge base (one-time, ~10s)
+python3 scripts/build_knowledge_base.py
+
+# 6. Start collector + APIs
 ./scripts/start_with_oai.sh
 
 # Alternative: run without Postgres (in-memory fallback)
@@ -156,7 +165,7 @@ curl -X POST http://localhost:8002/v1/access/request \
 ## Testing
 
 ```bash
-pytest tests/ -v          # Run all 175 tests
+pytest tests/ -v          # Run all 223 tests
 pytest tests/ -q          # Quick summary
 ```
 
