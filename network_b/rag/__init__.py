@@ -8,18 +8,19 @@ reference architecture for intent-driven network management
 """
 
 from network_b.rag.embeddings import EmbeddingClient, EmbeddingConfig, load_embedding_config
-from network_b.rag.knowledge_base import KbDocument, load_kb_documents
+from network_b.rag.knowledge_base import load_kb_documents
 from network_b.rag.retriever import Retriever, RetrieverConfig, load_retriever_config
-from network_b.rag.vector_store import VectorStore
+from network_b.rag.vector_store import StoredDocument, VectorStore
 
 __all__ = [
     "EmbeddingClient",
     "EmbeddingConfig",
-    "KbDocument",
     "Retriever",
     "RetrieverConfig",
+    "StoredDocument",
     "VectorStore",
     "load_embedding_config",
     "load_kb_documents",
     "load_retriever_config",
 ]
+

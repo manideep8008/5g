@@ -43,26 +43,6 @@ _H2_SPLIT = re.compile(r"^##\s+", re.MULTILINE)
 _CONTROL_CHARS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 
 
-@dataclass(frozen=True)
-class KbDocument:
-    """An indexed knowledge-base entry awaiting embedding."""
-
-    doc_id: str
-    source_type: str  # "policy" | "principle" | "precedent"
-    source_id: str
-    source_title: str
-    content: str
-    metadata: dict[str, str] = field(default_factory=dict)
-
-    def to_stored(self) -> StoredDocument:
-        return StoredDocument(
-            doc_id=self.doc_id,
-            source_type=self.source_type,
-            source_id=self.source_id,
-            source_title=self.source_title,
-            content=self.content,
-            metadata=self.metadata,
-        )
 
 
 # ---- public API --------------------------------------------------------
@@ -74,9 +54,9 @@ def load_kb_documents(
     access_decisions_dir: Path | None = None,
     max_precedents: int = 1000,
     max_precedent_age_days: int = 90,
-) -> list[KbDocument]:
+) -> list[StoredDocument]:
     """Build the full corpus from policy + seed docs + recent precedents."""
-    docs: list[KbDocument] = []
+    docs: list[StoredDocument] = []
     docs.extend(load_policy_documents(policy_yaml or _POLICY_YAML))
     docs.extend(load_principle_documents(seed_docs_dir or _SEED_DOCS_DIR))
     docs.extend(
@@ -90,14 +70,14 @@ def load_kb_documents(
     return docs
 
 
-def load_policy_documents(policy_yaml: Path) -> list[KbDocument]:
+def load_policy_documents(policy_yaml: Path) -> list[StoredDocument]:
     if not policy_yaml.exists():
         logger.warning("Policy YAML not found at %s", policy_yaml)
         return []
     with open(policy_yaml) as f:
         cfg = yaml.safe_load(f) or {}
 
-    docs: list[KbDocument] = []
+    docs: list[StoredDocument] = []
     source_id = policy_yaml.name
 
     # Risk weights — explain how the deterministic score is computed.
@@ -146,12 +126,12 @@ def load_policy_documents(policy_yaml: Path) -> list[KbDocument]:
     return docs
 
 
-def load_principle_documents(seed_docs_dir: Path) -> list[KbDocument]:
+def load_principle_documents(seed_docs_dir: Path) -> list[StoredDocument]:
     if not seed_docs_dir.exists():
         logger.info("No seed-docs dir at %s; skipping principle docs", seed_docs_dir)
         return []
 
-    docs: list[KbDocument] = []
+    docs: list[StoredDocument] = []
     for md_path in sorted(seed_docs_dir.glob("*.md")):
         text = md_path.read_text(encoding="utf-8")
         for section_title, section_body in _split_markdown_sections(text):
@@ -159,7 +139,7 @@ def load_principle_documents(seed_docs_dir: Path) -> list[KbDocument]:
             if not content:
                 continue
             docs.append(
-                KbDocument(
+                StoredDocument(
                     doc_id=_stable_id("principle", md_path.name, section_title),
                     source_type="principle",
                     source_id=md_path.name,
@@ -175,7 +155,7 @@ def load_precedent_documents(
     access_decisions_dir: Path,
     max_count: int,
     max_age_days: int,
-) -> list[KbDocument]:
+) -> list[StoredDocument]:
     if not access_decisions_dir.exists():
         logger.info("No access-decisions dir at %s; skipping precedents", access_decisions_dir)
         return []
@@ -187,7 +167,7 @@ def load_precedent_documents(
         reverse=True,
     )
 
-    docs: list[KbDocument] = []
+    docs: list[StoredDocument] = []
     for path in files:
         if len(docs) >= max_count:
             break
@@ -212,7 +192,7 @@ def load_precedent_documents(
             continue
 
         docs.append(
-            KbDocument(
+            StoredDocument(
                 doc_id=_stable_id("precedent", path.name, ""),
                 source_type="precedent",
                 source_id=path.name,
@@ -237,8 +217,8 @@ def _make_policy_doc(
     title: str,
     content: str,
     metadata: dict[str, str] | None = None,
-) -> KbDocument:
-    return KbDocument(
+) -> StoredDocument:
+    return StoredDocument(
         doc_id=_stable_id("policy", source_id, suffix),
         source_type="policy",
         source_id=source_id,

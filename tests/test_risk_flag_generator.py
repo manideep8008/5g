@@ -2,8 +2,8 @@
 
 import pytest
 
-from network_a.summary.profile_builder import UeProfile
-from network_a.summary.risk_flag_generator import (
+from network_a.summary.summary_generator import (
+    UeProfile,
     BucketThresholds,
     classify_auth_stability,
     classify_behaviour_label,

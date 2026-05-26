@@ -10,6 +10,7 @@ decide how to react.
 
 from __future__ import annotations
 
+import functools
 import logging
 import os
 import uuid
@@ -48,6 +49,7 @@ class RetrieverConfig:
     expansion_factor: int
 
 
+@functools.lru_cache()
 def load_retriever_config(config_path: Path | None = None) -> RetrieverConfig:
     path = config_path or _CONFIG_PATH
     with open(path) as f:

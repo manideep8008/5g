@@ -97,7 +97,7 @@ async def scrape_upf_loop(upf_url: str) -> None:
     logger.info("UPF scraper started (url=%s, interval=%ds)", upf_url, SCRAPE_INTERVAL)
     while True:
         try:
-            text = fetch_metrics(upf_url)
+            text = await fetch_metrics(upf_url)
             snapshots = parse_snapshots(text)
             logger.info("UPF scrape: %d UEs active", len(snapshots))
         except Exception as e:

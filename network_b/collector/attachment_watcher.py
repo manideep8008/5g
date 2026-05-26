@@ -30,7 +30,7 @@ from pathlib import Path
 import httpx
 
 from network_a.collector.amf_log_parser import AmfEventType, parse_line
-from network_a.identity.ue_hasher import pseudonymise_imsi
+from network_a.identity.identity_mapper import pseudonymise_imsi
 
 logger = logging.getLogger(__name__)
 

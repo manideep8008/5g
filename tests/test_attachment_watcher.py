@@ -8,7 +8,7 @@ from typing import Any
 import httpx
 import pytest
 
-from network_a.identity.ue_hasher import pseudonymise_imsi
+from network_a.identity.identity_mapper import pseudonymise_imsi
 from network_b.collector.attachment_watcher import trigger_access_decision
 
 

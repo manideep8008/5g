@@ -97,7 +97,7 @@ def build_session_record(
         bytes_uplink=upf.bytes_uplink if upf else 0,
         bytes_downlink=upf.bytes_downlink if upf else 0,
         peak_throughput_kbps=None,
-        spike_count=upf.packets_uplink if upf and False else 0,
+        spike_count=upf.packets_uplink if upf else 0,
         cell_id=cell_id,
     )
 

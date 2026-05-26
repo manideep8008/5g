@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import logging
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -124,7 +124,7 @@ class VectorStore:
         np.save(self.store_path / self._VECTORS_FILE, self._vectors)
         with open(self.store_path / self._DOCS_FILE, "w") as f:
             for doc in self._documents:
-                f.write(json.dumps(_doc_to_dict(doc)) + "\n")
+                f.write(json.dumps(asdict(doc)) + "\n")
         meta = {"dim": self.dim, "count": len(self._documents)}
         (self.store_path / self._META_FILE).write_text(json.dumps(meta, indent=2))
 
@@ -154,7 +154,7 @@ class VectorStore:
         with open(docs_file) as f:
             for line in f:
                 if line.strip():
-                    documents.append(_dict_to_doc(json.loads(line)))
+                    documents.append(StoredDocument(**json.loads(line)))
 
         if vectors.shape[0] != len(documents):
             raise ValueError(
@@ -177,23 +177,3 @@ def _ensure_normalized(vec: np.ndarray) -> np.ndarray:
     return vec / norm
 
 
-def _doc_to_dict(doc: StoredDocument) -> dict[str, Any]:
-    return {
-        "doc_id": doc.doc_id,
-        "source_type": doc.source_type,
-        "source_id": doc.source_id,
-        "source_title": doc.source_title,
-        "content": doc.content,
-        "metadata": doc.metadata,
-    }
-
-
-def _dict_to_doc(data: dict[str, Any]) -> StoredDocument:
-    return StoredDocument(
-        doc_id=str(data["doc_id"]),
-        source_type=str(data["source_type"]),
-        source_id=str(data["source_id"]),
-        source_title=str(data["source_title"]),
-        content=str(data["content"]),
-        metadata=dict(data.get("metadata") or {}),
-    )

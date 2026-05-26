@@ -1,6 +1,6 @@
 """Tests for HMAC pseudonymisation."""
 
-from network_a.identity.ue_hasher import pseudonymise_imsi, verify_pseudonym
+from network_a.identity.identity_mapper import pseudonymise_imsi, verify_pseudonym
 
 
 class TestUeHasher:

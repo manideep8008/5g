@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 import json
 import logging
 import os
@@ -77,6 +78,7 @@ class LlmConfig:
     timeout_sec: int
 
 
+@functools.lru_cache()
 def load_llm_config(config_path: Path | None = None) -> LlmConfig:
     path = config_path or _CONFIG_PATH
     with open(path) as f:
@@ -214,6 +216,6 @@ async def call_llm(
         raw_content = body.get("message", {}).get("content", "")
         return parse_llm_response(raw_content)
 
-    except (httpx.HTTPError, Exception) as e:
+    except (httpx.HTTPError, json.JSONDecodeError, KeyError, OSError) as e:
         logger.warning("LLM call failed: %s", e)
         return None

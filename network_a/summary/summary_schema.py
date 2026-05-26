@@ -115,6 +115,30 @@ class SimulatedEnforcement(BaseModel):
     allowed_services: list[str] = Field(default_factory=lambda: ["standard_data"])
 
 
+ENFORCEMENT_MAP = {
+    Tier.T0_REJECT: SimulatedEnforcement(
+        bandwidth_cap_mbps=0,
+        monitoring_interval_sec=None,
+        allowed_services=[],
+    ),
+    Tier.T1_RESTRICTED_ACCESS: SimulatedEnforcement(
+        bandwidth_cap_mbps=10,
+        monitoring_interval_sec=30,
+        allowed_services=["standard_data"],
+    ),
+    Tier.T2_MONITORED_ACCESS: SimulatedEnforcement(
+        bandwidth_cap_mbps=50,
+        monitoring_interval_sec=60,
+        allowed_services=["standard_data"],
+    ),
+    Tier.T3_FULL_ACCESS: SimulatedEnforcement(
+        bandwidth_cap_mbps=None,
+        monitoring_interval_sec=None,
+        allowed_services=["standard_data", "voice", "video", "iot"],
+    ),
+}
+
+
 SourceType = Literal["policy", "precedent", "principle"]
 
 

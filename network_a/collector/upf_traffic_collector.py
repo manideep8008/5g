@@ -15,6 +15,7 @@ Falls back to stub data when Prometheus is unreachable (development mode).
 from __future__ import annotations
 
 import logging
+import re
 import time
 from dataclasses import dataclass
 
@@ -36,8 +37,9 @@ class UpfSnapshot:
     pfcp_session_active: bool
 
 
-def fetch_metrics(upf_url: str = "http://localhost:9090/metrics", timeout_s: float = 2.0) -> str:
-    resp = httpx.get(upf_url, timeout=timeout_s)
+async def fetch_metrics(upf_url: str = "http://localhost:9090/metrics", timeout_s: float = 2.0) -> str:
+    async with httpx.AsyncClient(timeout=timeout_s) as client:
+        resp = await client.get(upf_url)
     resp.raise_for_status()
     return resp.text
 
@@ -127,6 +129,5 @@ def collect_stub(imsi: str) -> UpfSnapshot:
 
 
 def _extract_label(line: str, key: str) -> str | None:
-    import re
     m = re.search(rf'{key}="([^"]*)"', line)
     return m.group(1) if m else None

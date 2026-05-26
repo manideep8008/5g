@@ -8,6 +8,7 @@ offline development working without an external service.
 
 from __future__ import annotations
 
+import functools
 import hashlib
 import logging
 import math
@@ -34,6 +35,7 @@ class EmbeddingConfig:
     dim: int
 
 
+@functools.lru_cache()
 def load_embedding_config(config_path: Path | None = None) -> EmbeddingConfig:
     path = config_path or _CONFIG_PATH
     with open(path) as f:

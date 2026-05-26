@@ -4,7 +4,7 @@ import pytest
 from datetime import datetime, timezone
 
 from network_a import db
-from network_a.summary.profile_builder import build_profile
+from network_a.summary.summary_generator import build_profile
 
 
 @pytest.fixture(autouse=True)

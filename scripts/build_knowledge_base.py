@@ -118,7 +118,7 @@ async def _build(args: argparse.Namespace) -> int:
         )
 
     store = VectorStore(store_path=output_path, dim=client.config.dim)
-    store.add_many([doc.to_stored() for doc in documents], matrix)
+    store.add_many(documents, matrix)
     store.save()
 
     logger.info("Wrote vector store to %s (%d documents)", output_path, store.size)

@@ -22,8 +22,7 @@ from network_a.summary.summary_schema import (
     Tier,
     TrafficPattern,
 )
-from network_b.policy.risk_score import compute_risk_score
-from network_b.policy.tier_mapper import risk_to_max_tier
+from network_b.policy.policy_engine import compute_risk_score, risk_to_max_tier
 
 OUTPUT_PATH = Path(__file__).parent / "oracle_dataset.json"
 

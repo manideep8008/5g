@@ -1,18 +1,24 @@
+"""Network B Access Decision Service.
+
+Coordinates requests from clients by requesting behavioural summaries from
+Network A over HTTP, invoking the policy engine, grounding decisions using the
+RAG retriever, and logging audit outcomes.
+"""
+
 from __future__ import annotations
 
 import logging
 import os
-import threading
 from datetime import datetime, timezone
 
 import httpx
 
 from network_a.summary.summary_schema import (
+    ENFORCEMENT_MAP,
     AccessDecision,
     AccessRequest,
     NetworkBContext,
     PolicyEngineMetadata,
-    SimulatedEnforcement,
     SummaryRequest,
     SummaryResponse,
     Tier,
@@ -25,63 +31,34 @@ logger = logging.getLogger(__name__)
 
 NETWORK_A_URL = os.environ.get("NETWORK_A_URL", "http://localhost:8001")
 
-# Lazy-initialized RAG retriever shared across access requests. Built once
-# per process so the vector store + embeddings client are reused. ``None``
-# means RAG is disabled or unavailable (empty KB, missing index, etc.).
 _RETRIEVER: Retriever | None = None
-_RETRIEVER_LOCK = threading.Lock()
 _RETRIEVER_INITIALIZED = False
 
 
 def get_retriever() -> Retriever | None:
+    """Lazily load the RAG retriever instance once per process."""
     global _RETRIEVER, _RETRIEVER_INITIALIZED
-    if _RETRIEVER_INITIALIZED:
-        return _RETRIEVER
-    with _RETRIEVER_LOCK:
-        if _RETRIEVER_INITIALIZED:
-            return _RETRIEVER
+    if not _RETRIEVER_INITIALIZED:
         try:
             _RETRIEVER = Retriever.from_disk()
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             logger.warning("Failed to initialize RAG retriever: %s", exc)
             _RETRIEVER = None
         _RETRIEVER_INITIALIZED = True
+
         if _RETRIEVER is None:
             logger.info("RAG retriever not active — running without evidence grounding")
         else:
             logger.info("RAG retriever ready with %d indexed documents", _RETRIEVER.store.size)
+
     return _RETRIEVER
 
 
 def reset_retriever_for_tests() -> None:
     """Clear the cached retriever; used by tests that swap the index."""
     global _RETRIEVER, _RETRIEVER_INITIALIZED
-    with _RETRIEVER_LOCK:
-        _RETRIEVER = None
-        _RETRIEVER_INITIALIZED = False
-
-ENFORCEMENT_MAP = {
-    Tier.T0_REJECT: SimulatedEnforcement(
-        bandwidth_cap_mbps=0,
-        monitoring_interval_sec=None,
-        allowed_services=[],
-    ),
-    Tier.T1_RESTRICTED_ACCESS: SimulatedEnforcement(
-        bandwidth_cap_mbps=10,
-        monitoring_interval_sec=30,
-        allowed_services=["standard_data"],
-    ),
-    Tier.T2_MONITORED_ACCESS: SimulatedEnforcement(
-        bandwidth_cap_mbps=50,
-        monitoring_interval_sec=60,
-        allowed_services=["standard_data"],
-    ),
-    Tier.T3_FULL_ACCESS: SimulatedEnforcement(
-        bandwidth_cap_mbps=None,
-        monitoring_interval_sec=None,
-        allowed_services=["standard_data", "voice", "video", "iot"],
-    ),
-}
+    _RETRIEVER = None
+    _RETRIEVER_INITIALIZED = False
 
 
 async def fetch_summary(
@@ -89,6 +66,7 @@ async def fetch_summary(
     request_id: str,
     access_req: AccessRequest,
 ) -> SummaryResponse | None:
+    """Fetch behavioural summary for a specific pseudonym from Network A."""
     summary_req = SummaryRequest(
         request_id=request_id,
         ue_pseudonym=ue_pseudonym,
@@ -113,6 +91,7 @@ async def fetch_summary(
 
 
 async def handle_access_request(access_req: AccessRequest) -> AccessDecision:
+    """Evaluate access request and return authorization tier decision."""
     summary_resp = await fetch_summary(
         access_req.ue_pseudonym,
         access_req.request_id,
