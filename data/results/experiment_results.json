@@ -9,7 +9,7 @@
     "correct": true,
     "risk_score": 0.0,
     "reason": "Risk score 0.00 maps to T3_FULL_ACCESS",
-    "latency_ms": 0.02,
+    "latency_ms": 0.01,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
@@ -65,7 +65,7 @@
     "correct": false,
     "risk_score": 0.38,
     "reason": "No summary available. Risk estimated from request context only: slice=eMBB (+0.10), service=standard_data (+0.00), base_uncertainty=0.35",
-    "latency_ms": 0.01,
+    "latency_ms": 0.0,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
@@ -149,7 +149,7 @@
     "correct": false,
     "risk_score": 0.38,
     "reason": "No summary available. Risk estimated from request context only: slice=eMBB (+0.10), service=standard_data (+0.00), base_uncertainty=0.35",
-    "latency_ms": 0.01,
+    "latency_ms": 0.0,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
@@ -765,7 +765,7 @@
     "correct": true,
     "risk_score": 0.175,
     "reason": "Risk score 0.17 maps to T3_FULL_ACCESS",
-    "latency_ms": 0.01,
+    "latency_ms": 0.0,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
@@ -779,7 +779,7 @@
     "correct": false,
     "risk_score": 0.38,
     "reason": "No summary available. Risk estimated from request context only: slice=eMBB (+0.10), service=standard_data (+0.00), base_uncertainty=0.35",
-    "latency_ms": 0.01,
+    "latency_ms": 0.0,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
@@ -1703,7 +1703,7 @@
     "correct": true,
     "risk_score": 0.38,
     "reason": "No summary available. Risk estimated from request context only: slice=eMBB (+0.10), service=standard_data (+0.00), base_uncertainty=0.35",
-    "latency_ms": 0.01,
+    "latency_ms": 0.0,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
@@ -2291,7 +2291,7 @@
     "correct": true,
     "risk_score": 0.38,
     "reason": "No summary available. Risk estimated from request context only: slice=eMBB (+0.10), service=standard_data (+0.00), base_uncertainty=0.35",
-    "latency_ms": 0.0,
+    "latency_ms": 0.01,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
@@ -3523,7 +3523,7 @@
     "correct": true,
     "risk_score": 0.3,
     "reason": "Risk score 0.30 maps to T2_MONITORED_ACCESS (LLM unavailable fallback)",
-    "latency_ms": 0.01,
+    "latency_ms": 0.0,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
@@ -3537,7 +3537,7 @@
     "correct": true,
     "risk_score": 0.525,
     "reason": "Risk score 0.53 maps to T1_RESTRICTED_ACCESS",
-    "latency_ms": 0.02,
+    "latency_ms": 0.0,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
@@ -3551,7 +3551,7 @@
     "correct": false,
     "risk_score": 0.38,
     "reason": "No summary available. Risk estimated from request context only: slice=eMBB (+0.10), service=standard_data (+0.00), base_uncertainty=0.35",
-    "latency_ms": 0.01,
+    "latency_ms": 0.0,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
@@ -3579,7 +3579,7 @@
     "correct": true,
     "risk_score": 0.525,
     "reason": "Risk score 0.53 maps to T1_RESTRICTED_ACCESS",
-    "latency_ms": 0.01,
+    "latency_ms": 0.0,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
@@ -4979,7 +4979,7 @@
     "correct": false,
     "risk_score": 0.38,
     "reason": "No summary available. Risk estimated from request context only: slice=eMBB (+0.10), service=standard_data (+0.00), base_uncertainty=0.35",
-    "latency_ms": 0.01,
+    "latency_ms": 0.0,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
@@ -5763,7 +5763,7 @@
     "correct": true,
     "risk_score": 0.875,
     "reason": "Risk score 0.88 maps to T0_REJECT",
-    "latency_ms": 0.0,
+    "latency_ms": 0.01,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
@@ -6617,7 +6617,7 @@
     "correct": true,
     "risk_score": 0.38,
     "reason": "No summary available. Risk estimated from request context only: slice=eMBB (+0.10), service=standard_data (+0.00), base_uncertainty=0.35",
-    "latency_ms": 0.01,
+    "latency_ms": 0.0,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
@@ -7233,7 +7233,7 @@
     "correct": false,
     "risk_score": 0.075,
     "reason": "Risk score 0.07 maps to T3_FULL_ACCESS",
-    "latency_ms": 0.01,
+    "latency_ms": 0.0,
     "llm_proposed_tier": null,
     "safety_floor_clipped": false
   },
