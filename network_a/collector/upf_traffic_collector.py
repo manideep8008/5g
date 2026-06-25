@@ -17,6 +17,7 @@ from __future__ import annotations
 import logging
 import re
 import time
+from collections import deque
 from dataclasses import dataclass
 
 import httpx
@@ -35,6 +36,22 @@ class UpfSnapshot:
     packets_uplink: int
     packets_downlink: int
     pfcp_session_active: bool
+
+
+@dataclass(frozen=True)
+class SessionTraffic:
+    """Per-session traffic derived from cumulative UPF counters.
+
+    Unlike UpfSnapshot (which holds lifetime cumulative counters), these
+    values are scoped to a single UE session: byte deltas since the session
+    started, the peak throughput observed during it, and the number of
+    throughput spikes detected.
+    """
+
+    bytes_uplink: int
+    bytes_downlink: int
+    peak_throughput_kbps: int
+    spike_count: int
 
 
 async def fetch_metrics(upf_url: str = "http://localhost:9090/metrics", timeout_s: float = 2.0) -> str:
@@ -131,3 +148,90 @@ def collect_stub(imsi: str) -> UpfSnapshot:
 def _extract_label(line: str, key: str) -> str | None:
     m = re.search(rf'{key}="([^"]*)"', line)
     return m.group(1) if m else None
+
+
+def _aggregate(snapshots: list[UpfSnapshot]) -> UpfSnapshot:
+    """Collapse all reported UEs into one cumulative snapshot.
+
+    Under the single-UE testbed assumption there is normally exactly one
+    entry; summing is a safe fallback if the UPF briefly reports a stale or
+    second IP at the same time.
+    """
+    return UpfSnapshot(
+        ts=snapshots[0].ts,
+        ue_ip=snapshots[0].ue_ip,
+        bytes_uplink=sum(s.bytes_uplink for s in snapshots),
+        bytes_downlink=sum(s.bytes_downlink for s in snapshots),
+        packets_uplink=sum(s.packets_uplink for s in snapshots),
+        packets_downlink=sum(s.packets_downlink for s in snapshots),
+        pfcp_session_active=any(s.pfcp_session_active for s in snapshots),
+    )
+
+
+class UpfMonitor:
+    """Single-UE UPF traffic monitor.
+
+    Assumes at most one active UE on the testbed at a time (one USRP B210).
+    Ingests cumulative UPF counters from each scrape and derives per-session
+    traffic by diffing against a baseline captured at session start. Peak
+    throughput and spike counts are accumulated only while a session is open.
+
+    NOTE: with concurrent UEs the per-session attribution is approximate —
+    traffic from all active UEs is aggregated together. This is acceptable for
+    the single-UE testbed; multi-UE scale tests need IMSI<->IP correlation.
+    """
+
+    def __init__(self, spike_window: int = 6) -> None:
+        self._latest: UpfSnapshot | None = None
+        self._prev: UpfSnapshot | None = None
+        self._recent_kbps: deque[float] = deque(maxlen=spike_window)
+        self._session_base: UpfSnapshot | None = None
+        self._session_peak_kbps: float = 0.0
+        self._session_spikes: int = 0
+        self._in_session: bool = False
+
+    def update(self, snapshots: list[UpfSnapshot]) -> None:
+        """Ingest one scrape of UPF metrics."""
+        if not snapshots:
+            return
+        curr = _aggregate(snapshots)
+        if self._prev is not None:
+            d = diff_snapshots(self._prev, curr)
+            tput = d["throughput_uplink_kbps"] + d["throughput_downlink_kbps"]
+            avg = (
+                sum(self._recent_kbps) / len(self._recent_kbps)
+                if self._recent_kbps
+                else 0.0
+            )
+            if self._in_session:
+                if detect_spike(tput, avg):
+                    self._session_spikes += 1
+                self._session_peak_kbps = max(self._session_peak_kbps, tput)
+            self._recent_kbps.append(tput)
+        self._prev = curr
+        self._latest = curr
+
+    def start_session(self) -> None:
+        """Mark the start of a UE session — captures the byte baseline."""
+        self._session_base = self._latest
+        self._session_peak_kbps = 0.0
+        self._session_spikes = 0
+        self._in_session = True
+
+    def finalize_session(self) -> SessionTraffic:
+        """Return traffic accumulated since the last start_session()."""
+        self._in_session = False
+        if self._latest is None:
+            return SessionTraffic(0, 0, 0, 0)
+        base = self._session_base
+        if base is None:
+            up, dn = self._latest.bytes_uplink, self._latest.bytes_downlink
+        else:
+            up = max(0, self._latest.bytes_uplink - base.bytes_uplink)
+            dn = max(0, self._latest.bytes_downlink - base.bytes_downlink)
+        return SessionTraffic(
+            bytes_uplink=up,
+            bytes_downlink=dn,
+            peak_throughput_kbps=int(self._session_peak_kbps),
+            spike_count=self._session_spikes,
+        )

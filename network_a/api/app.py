@@ -34,6 +34,7 @@ async def lifespan(app: FastAPI):
     # so that persisted sessions are visible to the API routes.
     if db._USE_MEMORY_FALLBACK:
         from network_a.collector.collector_main import tail_file, scrape_upf_loop
+        from network_a.collector.upf_traffic_collector import UpfMonitor
 
         amf_log = os.environ.get("AMF_LOG_PATH", _DEFAULT_AMF_LOG)
         upf_url = os.environ.get("UPF_PROMETHEUS_URL", _DEFAULT_UPF_URL)
@@ -42,8 +43,10 @@ async def lifespan(app: FastAPI):
             "In-memory mode: starting embedded collector (amf=%s, upf=%s)",
             amf_log, upf_url,
         )
-        background_tasks.append(asyncio.create_task(tail_file(Path(amf_log))))
-        background_tasks.append(asyncio.create_task(scrape_upf_loop(upf_url)))
+        # One shared monitor so UPF traffic reaches the session builder.
+        monitor = UpfMonitor()
+        background_tasks.append(asyncio.create_task(tail_file(Path(amf_log), monitor)))
+        background_tasks.append(asyncio.create_task(scrape_upf_loop(upf_url, monitor)))
 
     yield
 

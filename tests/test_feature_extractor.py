@@ -2,7 +2,7 @@
 
 from network_a.collector.amf_log_parser import AmfEventType, parse_log_lines
 from network_a.collector.feature_extractor import build_session_record, group_events_by_imsi
-from network_a.collector.upf_traffic_collector import UpfSnapshot
+from network_a.collector.upf_traffic_collector import SessionTraffic, UpfSnapshot
 
 import time
 
@@ -61,6 +61,27 @@ class TestBuildSessionRecord:
         record = build_session_record("UE_HASH_001", events, upf=upf)
         assert record.bytes_uplink == 5000
         assert record.bytes_downlink == 25000
+
+    def test_session_with_traffic(self):
+        events = parse_log_lines(FULL_SESSION_LINES)
+        traffic = SessionTraffic(
+            bytes_uplink=5000,
+            bytes_downlink=25000,
+            peak_throughput_kbps=1600,
+            spike_count=2,
+        )
+        record = build_session_record("UE_HASH_001", events, traffic=traffic)
+        assert record.bytes_uplink == 5000
+        assert record.bytes_downlink == 25000
+        assert record.peak_throughput_kbps == 1600
+        assert record.spike_count == 2
+
+    def test_no_traffic_defaults_to_zero(self):
+        events = parse_log_lines(FULL_SESSION_LINES)
+        record = build_session_record("UE_HASH_001", events)
+        assert record.bytes_uplink == 0
+        assert record.spike_count == 0
+        assert record.peak_throughput_kbps is None
 
     def test_session_with_auth_failure(self):
         lines = [

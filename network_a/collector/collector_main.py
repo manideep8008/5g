@@ -17,7 +17,11 @@ from pathlib import Path
 from network_a import db
 from network_a.collector.amf_log_parser import AmfEventType, parse_line
 from network_a.collector.feature_extractor import build_session_record, persist_session
-from network_a.collector.upf_traffic_collector import collect_stub, fetch_metrics, parse_snapshots
+from network_a.collector.upf_traffic_collector import (
+    UpfMonitor,
+    fetch_metrics,
+    parse_snapshots,
+)
 from network_a.identity.identity_mapper import get_or_create_pseudonym
 
 logger = logging.getLogger(__name__)
@@ -28,7 +32,7 @@ DEFAULT_UPF_URL = "http://localhost:9090/metrics"
 SCRAPE_INTERVAL = 10
 
 
-async def tail_file(path: Path) -> None:
+async def tail_file(path: Path, monitor: UpfMonitor) -> None:
     """Tail a log file like `tail -F`, yielding new lines."""
     logger.info("Tailing AMF log: %s", path)
 
@@ -59,9 +63,16 @@ async def tail_file(path: Path) -> None:
                     )
                     if has_release and len(events) >= 2:
                         pseudonym = await get_or_create_pseudonym(imsi)
-                        record = build_session_record(pseudonym, events)
+                        traffic = monitor.finalize_session()
+                        record = build_session_record(pseudonym, events, traffic=traffic)
                         session_id = await persist_session(record)
-                        logger.info("Session %s persisted for %s (IMSI %s)", session_id, pseudonym, imsi)
+                        logger.info(
+                            "Session %s persisted for %s (IMSI %s) — "
+                            "up=%dB dn=%dB peak=%dkbps spikes=%d",
+                            session_id, pseudonym, imsi,
+                            traffic.bytes_uplink, traffic.bytes_downlink,
+                            traffic.peak_throughput_kbps, traffic.spike_count,
+                        )
                         del session_events[imsi]
                 continue
 
@@ -88,17 +99,23 @@ async def tail_file(path: Path) -> None:
             if event.event_type == AmfEventType.UE_TABLE_STATUS:
                 continue
 
+            # First event for this IMSI marks a new session — snapshot the
+            # UPF byte baseline so per-session traffic can be diffed at release.
+            if imsi not in session_events:
+                monitor.start_session()
+
             logger.info("Event: %s for IMSI %s", event.event_type.value, imsi)
             session_events.setdefault(imsi, []).append(event)
 
 
-async def scrape_upf_loop(upf_url: str) -> None:
-    """Periodically scrape UPF Prometheus metrics."""
+async def scrape_upf_loop(upf_url: str, monitor: UpfMonitor) -> None:
+    """Periodically scrape UPF Prometheus metrics and feed the monitor."""
     logger.info("UPF scraper started (url=%s, interval=%ds)", upf_url, SCRAPE_INTERVAL)
     while True:
         try:
             text = await fetch_metrics(upf_url)
             snapshots = parse_snapshots(text)
+            monitor.update(snapshots)
             logger.info("UPF scrape: %d UEs active", len(snapshots))
         except Exception as e:
             logger.debug("UPF scrape failed: %s (will retry)", e)
@@ -107,10 +124,11 @@ async def scrape_upf_loop(upf_url: str) -> None:
 
 async def main(amf_log: str, upf_url: str) -> None:
     await db.init_pool()
+    monitor = UpfMonitor()
     try:
         tasks = [
-            asyncio.create_task(tail_file(Path(amf_log))),
-            asyncio.create_task(scrape_upf_loop(upf_url)),
+            asyncio.create_task(tail_file(Path(amf_log), monitor)),
+            asyncio.create_task(scrape_upf_loop(upf_url, monitor)),
         ]
         await asyncio.gather(*tasks)
     finally:
