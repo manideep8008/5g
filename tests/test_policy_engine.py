@@ -6,9 +6,7 @@ from network_a.summary.summary_schema import (
     TrafficPattern,
     UeBehaviouralSummary,
 )
-from network_b.policy.policy_engine import decide
-from network_b.policy.risk_score import compute_risk_score
-from network_b.policy.tier_mapper import apply_safety_floor, risk_to_max_tier
+from network_b.policy.policy_engine import decide, compute_risk_score, apply_safety_floor, risk_to_max_tier
 
 
 def _make_summary(**overrides) -> UeBehaviouralSummary:

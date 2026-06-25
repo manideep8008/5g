@@ -5,8 +5,22 @@ Falls back to in-memory when Postgres is unavailable (same as db.py).
 """
 from __future__ import annotations
 
-from network_a.identity.ue_hasher import pseudonymise_imsi
+import hashlib
+import hmac
+import os
+
 from network_a import db
+
+_HMAC_KEY = os.environ.get("HMAC_SECRET_KEY", "default_dev_key_not_for_production").encode("utf-8")
+
+
+def pseudonymise_imsi(imsi: str) -> str:
+    digest = hmac.new(_HMAC_KEY, imsi.encode("utf-8"), hashlib.sha256).hexdigest()
+    return f"UE_HASH_{digest[:12].upper()}"
+
+
+def verify_pseudonym(imsi: str, pseudonym: str) -> bool:
+    return pseudonymise_imsi(imsi) == pseudonym
 
 
 async def get_or_create_pseudonym(imsi: str, network_b_id: str = "Network_B") -> str:

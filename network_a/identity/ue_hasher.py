@@ -1,22 +1,25 @@
-import hashlib
-import hmac
-import os
+"""Deprecated backward-compatibility wrapper for IMSI hashing.
 
-_HMAC_KEY: bytes | None = None
+All active identity logic has been consolidated into identity_mapper.py.
+Please import from network_a.identity.identity_mapper directly.
+"""
 
+from __future__ import annotations
 
-def _get_hmac_key() -> bytes:
-    global _HMAC_KEY
-    if _HMAC_KEY is None:
-        key_hex = os.environ.get("HMAC_SECRET_KEY", "default_dev_key_not_for_production")
-        _HMAC_KEY = key_hex.encode("utf-8")
-    return _HMAC_KEY
+import warnings
 
+warnings.warn(
+    "ue_hasher is deprecated; import from network_a.identity.identity_mapper instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
-def pseudonymise_imsi(imsi: str) -> str:
-    digest = hmac.new(_HMAC_KEY or _get_hmac_key(), imsi.encode("utf-8"), hashlib.sha256).hexdigest()
-    return f"UE_HASH_{digest[:12].upper()}"
+from network_a.identity.identity_mapper import (
+    pseudonymise_imsi,
+    verify_pseudonym,
+)
 
-
-def verify_pseudonym(imsi: str, pseudonym: str) -> bool:
-    return pseudonymise_imsi(imsi) == pseudonym
+__all__ = [
+    "pseudonymise_imsi",
+    "verify_pseudonym",
+]

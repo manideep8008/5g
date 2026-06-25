@@ -11,6 +11,7 @@ import logging
 from datetime import datetime, timezone
 
 from network_a.summary.summary_schema import (
+    ENFORCEMENT_MAP,
     AccessDecision,
     AccessRequest,
     PolicyEngineMetadata,
@@ -19,32 +20,11 @@ from network_a.summary.summary_schema import (
     UeBehaviouralSummary,
 )
 from network_b.policy.llm_client import LlmConfig, call_llm, load_llm_config
-from network_b.policy.risk_score import compute_risk_score
+from network_b.policy.policy_engine import compute_risk_score
 
 logger = logging.getLogger(__name__)
 
-ENFORCEMENT_MAP = {
-    Tier.T0_REJECT: SimulatedEnforcement(
-        bandwidth_cap_mbps=0,
-        monitoring_interval_sec=None,
-        allowed_services=[],
-    ),
-    Tier.T1_RESTRICTED_ACCESS: SimulatedEnforcement(
-        bandwidth_cap_mbps=10,
-        monitoring_interval_sec=30,
-        allowed_services=["standard_data"],
-    ),
-    Tier.T2_MONITORED_ACCESS: SimulatedEnforcement(
-        bandwidth_cap_mbps=50,
-        monitoring_interval_sec=60,
-        allowed_services=["standard_data"],
-    ),
-    Tier.T3_FULL_ACCESS: SimulatedEnforcement(
-        bandwidth_cap_mbps=None,
-        monitoring_interval_sec=None,
-        allowed_services=["standard_data", "voice", "video", "iot"],
-    ),
-}
+
 
 
 async def decide_llm_only(

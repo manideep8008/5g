@@ -29,3 +29,40 @@ llm:
   temperature: 0.0
   base_url: http://localhost:11434
   timeout_sec: 30
+
+rag:
+  enabled: true
+  embedding:
+    # Ollama model used for embeddings. Falls back to deterministic
+    # hashing-trick vectors if Ollama is unreachable or the model
+    # is missing — used only as a safety net for tests/dev.
+    model: nomic-embed-text
+    base_url: http://localhost:11434
+    timeout_sec: 15
+    dim: 768
+  store:
+    # Where the indexed knowledge base lives on disk.
+    path: data/knowledge_base/index
+  retrieval:
+    # Top-k snippets per source type before adequacy check.
+    top_k_policy: 3
+    top_k_precedent: 3
+    top_k_principle: 2
+    # Cosine similarity cutoff; results below this are discarded.
+    min_similarity: 0.15
+    # Maximum total snippets shown to the LLM after adequacy filtering.
+    max_total_snippets: 6
+    # Per-snippet character cap (defence against prompt-injection bloat).
+    max_snippet_chars: 600
+  adequacy:
+    # Minimum number of distinct facets that must be covered before the
+    # bundle is considered adequate. Facets: policy, precedent, principle.
+    min_facets: 2
+    # If retrieval is inadequate, expand retrieval by this factor before
+    # falling back to non-RAG behaviour.
+    expansion_factor: 2
+  precedents:
+    # Maximum age (days) for past decisions to be considered as precedent.
+    max_age_days: 90
+    # Cap on indexed precedents to prevent unbounded KB growth.
+    max_count: 1000

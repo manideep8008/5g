@@ -4,12 +4,20 @@ import time
 from pathlib import Path
 
 from network_a.collector.upf_traffic_collector import (
+    UpfMonitor,
     UpfSnapshot,
     collect_stub,
     detect_spike,
     diff_snapshots,
     parse_snapshots,
 )
+
+
+def _snap(ts: float, up: int, dn: int, ip: str = "12.1.1.2") -> UpfSnapshot:
+    return UpfSnapshot(
+        ts=ts, ue_ip=ip, bytes_uplink=up, bytes_downlink=dn,
+        packets_uplink=0, packets_downlink=0, pfcp_session_active=True,
+    )
 
 
 SAMPLE_METRICS = Path(__file__).resolve().parent.parent / "data" / "logs" / "sample_upf_metrics.txt"
@@ -96,3 +104,54 @@ class TestCollectStub:
         assert snap.ue_ip == "12.1.1.2"
         assert snap.bytes_uplink > 0
         assert snap.pfcp_session_active is True
+
+
+class TestUpfMonitor:
+    def test_no_data_returns_zero_traffic(self):
+        monitor = UpfMonitor()
+        traffic = monitor.finalize_session()
+        assert traffic.bytes_uplink == 0
+        assert traffic.bytes_downlink == 0
+        assert traffic.peak_throughput_kbps == 0
+        assert traffic.spike_count == 0
+
+    def test_session_byte_deltas(self):
+        monitor = UpfMonitor()
+        monitor.update([_snap(0.0, up=1000, dn=5000)])
+        monitor.start_session()
+        monitor.update([_snap(1.0, up=3000, dn=15000)])
+        traffic = monitor.finalize_session()
+        # bytes scoped to the session: delta since start_session baseline
+        assert traffic.bytes_uplink == 2000
+        assert traffic.bytes_downlink == 10000
+
+    def test_peak_and_spike_during_session(self):
+        monitor = UpfMonitor()
+        monitor.update([_snap(0.0, up=0, dn=0)])
+        monitor.start_session()
+        monitor.update([_snap(1.0, up=20_000, dn=0)])      # ~160 kbps, no spike
+        monitor.update([_snap(2.0, up=220_000, dn=0)])     # ~1600 kbps spike vs avg
+        traffic = monitor.finalize_session()
+        assert traffic.bytes_uplink == 220_000
+        assert traffic.peak_throughput_kbps == 1600
+        assert traffic.spike_count == 1
+
+    def test_traffic_not_accumulated_before_session(self):
+        monitor = UpfMonitor()
+        monitor.update([_snap(0.0, up=0, dn=0)])
+        monitor.update([_snap(1.0, up=500_000, dn=0)])     # big burst, no session open
+        monitor.start_session()
+        traffic = monitor.finalize_session()
+        assert traffic.peak_throughput_kbps == 0
+        assert traffic.spike_count == 0
+
+    def test_aggregates_multiple_ues(self):
+        monitor = UpfMonitor()
+        monitor.update([_snap(0.0, up=0, dn=0, ip="12.1.1.2")])
+        monitor.start_session()
+        monitor.update([
+            _snap(1.0, up=1000, dn=0, ip="12.1.1.2"),
+            _snap(1.0, up=2000, dn=0, ip="12.1.1.3"),
+        ])
+        traffic = monitor.finalize_session()
+        assert traffic.bytes_uplink == 3000

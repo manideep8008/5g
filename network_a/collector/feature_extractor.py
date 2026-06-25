@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from network_a.collector.amf_log_parser import AmfEvent, AmfEventType
-from network_a.collector.upf_traffic_collector import UpfSnapshot
+from network_a.collector.upf_traffic_collector import SessionTraffic, UpfSnapshot
 from network_a import db
 
 
@@ -51,6 +51,7 @@ def build_session_record(
     pseudonym: str,
     events: list[AmfEvent],
     upf: UpfSnapshot | None = None,
+    traffic: SessionTraffic | None = None,
 ) -> SessionRecord:
     reg_events = [e for e in events if e.event_type in (
         AmfEventType.REGISTRATION_REQUEST, AmfEventType.REGISTRATION_COMPLETE,
@@ -82,6 +83,26 @@ def build_session_record(
             cell_id = e.cell_id
             break
 
+    # Resolve traffic features. Prefer per-session `traffic` (live collector);
+    # fall back to a raw `upf` snapshot's cumulative bytes (legacy/tests);
+    # otherwise zeros. spike_count and peak_throughput are only meaningful
+    # when derived per-session, so they stay empty in the legacy path.
+    if traffic is not None:
+        bytes_uplink = traffic.bytes_uplink
+        bytes_downlink = traffic.bytes_downlink
+        peak_throughput_kbps: int | None = traffic.peak_throughput_kbps
+        spike_count = traffic.spike_count
+    elif upf is not None:
+        bytes_uplink = upf.bytes_uplink
+        bytes_downlink = upf.bytes_downlink
+        peak_throughput_kbps = None
+        spike_count = 0
+    else:
+        bytes_uplink = 0
+        bytes_downlink = 0
+        peak_throughput_kbps = None
+        spike_count = 0
+
     return SessionRecord(
         pseudonym=pseudonym,
         started_at=started_at,
@@ -94,10 +115,10 @@ def build_session_record(
         pdu_failures=pdu_failures,
         requested_slice=None,
         requested_dnn=None,
-        bytes_uplink=upf.bytes_uplink if upf else 0,
-        bytes_downlink=upf.bytes_downlink if upf else 0,
-        peak_throughput_kbps=None,
-        spike_count=upf.packets_uplink if upf and False else 0,
+        bytes_uplink=bytes_uplink,
+        bytes_downlink=bytes_downlink,
+        peak_throughput_kbps=peak_throughput_kbps,
+        spike_count=spike_count,
         cell_id=cell_id,
     )
 

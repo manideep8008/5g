@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 import json
 import logging
 import os
@@ -9,7 +10,7 @@ from pathlib import Path
 import httpx
 import yaml
 
-from network_a.summary.summary_schema import Tier, UeBehaviouralSummary
+from network_a.summary.summary_schema import EvidenceBundle, Tier, UeBehaviouralSummary
 
 logger = logging.getLogger(__name__)
 
@@ -51,9 +52,14 @@ UE Behavioural Summary:
 - behaviour_label: {behaviour_label}
 
 Requested access: slice={requested_slice}, service={requested_service}
-
-Decide the access tier. Respond with JSON only.
+{evidence_block}
+Decide the access tier. Ground your reasoning in the retrieved evidence \
+above when it is present, and cite snippet ids in the form [policy:id], \
+[principle:id], or [precedent:id] inside the reasoning field. Respond with \
+JSON only.
 """
+
+_EVIDENCE_HEADER = "\nRetrieved Evidence (use this to ground your decision):\n"
 
 
 @dataclass(frozen=True)
@@ -72,6 +78,7 @@ class LlmConfig:
     timeout_sec: int
 
 
+@functools.lru_cache()
 def load_llm_config(config_path: Path | None = None) -> LlmConfig:
     path = config_path or _CONFIG_PATH
     with open(path) as f:
@@ -117,10 +124,42 @@ def parse_llm_response(raw: str) -> LlmProposal | None:
     )
 
 
+def format_evidence_block(bundle: EvidenceBundle | None) -> str:
+    if bundle is None or not bundle.snippets:
+        return ""
+
+    lines: list[str] = [_EVIDENCE_HEADER]
+    for snippet in bundle.snippets:
+        # Untrusted retrieved text is fenced and labelled so the LLM treats
+        # it as evidence rather than as instructions to follow.
+        header = (
+            f"[{snippet.source_type}:{snippet.snippet_id}] "
+            f"{snippet.source_title} (similarity={snippet.similarity:.2f})"
+        )
+        lines.append(header)
+        lines.append("\"\"\"")
+        lines.append(snippet.content)
+        lines.append("\"\"\"")
+        lines.append("")
+
+    if bundle.adequacy.expansion_triggered:
+        lines.append(
+            "Note: retrieval was expanded because initial evidence did not "
+            "cover enough distinct sources. Treat evidence cautiously."
+        )
+    if not bundle.adequacy.adequate:
+        lines.append(
+            "Warning: the evidence bundle was flagged as inadequate. "
+            "Lean conservative if evidence does not clearly justify a tier."
+        )
+    return "\n".join(lines) + "\n"
+
+
 def build_user_prompt(
     summary: UeBehaviouralSummary,
     requested_slice: str = "eMBB",
     requested_service: str = "standard_data",
+    evidence: EvidenceBundle | None = None,
 ) -> str:
     return USER_PROMPT_TEMPLATE.format(
         auth_stability=summary.auth_stability.value,
@@ -131,6 +170,7 @@ def build_user_prompt(
         behaviour_label=summary.behaviour_label.value,
         requested_slice=requested_slice,
         requested_service=requested_service,
+        evidence_block=format_evidence_block(evidence),
     )
 
 
@@ -139,9 +179,15 @@ async def call_llm(
     config: LlmConfig | None = None,
     requested_slice: str = "eMBB",
     requested_service: str = "standard_data",
+    evidence: EvidenceBundle | None = None,
 ) -> LlmProposal | None:
     cfg = config or load_llm_config()
-    user_prompt = build_user_prompt(summary, requested_slice, requested_service)
+    user_prompt = build_user_prompt(
+        summary,
+        requested_slice,
+        requested_service,
+        evidence=evidence,
+    )
 
     payload = {
         "model": cfg.model,
@@ -170,6 +216,6 @@ async def call_llm(
         raw_content = body.get("message", {}).get("content", "")
         return parse_llm_response(raw_content)
 
-    except (httpx.HTTPError, Exception) as e:
+    except (httpx.HTTPError, json.JSONDecodeError, KeyError, OSError) as e:
         logger.warning("LLM call failed: %s", e)
         return None

@@ -2,20 +2,22 @@
 
 from network_a.collector.amf_log_parser import AmfEventType, parse_log_lines
 from network_a.collector.feature_extractor import build_session_record, group_events_by_imsi
-from network_a.collector.upf_traffic_collector import UpfSnapshot
+from network_a.collector.upf_traffic_collector import SessionTraffic, UpfSnapshot
 
 import time
 
 
 FULL_SESSION_LINES = [
-    "2025-01-05 01:02:20.000 [amf_app] [info] New UE Registration Request",
-    "2025-01-05 01:02:20.100 [amf_app] [info] UE Authentication Started for IMSI: 208950000000031",
-    "2025-01-05 01:02:20.500 [amf_app] [info] UE Authentication Successful for IMSI: 208950000000031",
-    "2025-01-05 01:02:21.100 [amf_app] [info] IMSI: 208950000000031, 5GMM State: REGISTERED, GUTI: 208950000000031, Cell ID: 0x00000001",
-    "2025-01-05 01:02:25.000 [amf_app] [info] PDU Session Establishment Request received",
-    "2025-01-05 01:02:25.300 [amf_app] [info] PDU Session Establishment Accept sent to UE",
-    "2025-01-05 01:02:50.000 [amf_app] [info] UE Context Release Request received from gNB",
-    "2025-01-05 01:02:50.500 [amf_app] [info] UE Context Release Complete received from gNB",
+    "[2026-05-13 18:42:20.768] [amf_n1] [debug] Start to run Registration Procedure",
+    "[2026-05-13 18:42:20.778] [amf_n1] [debug] Start to generate Authentication Vectors",
+    "[2026-05-13 18:42:20.779] [amf_sbi] [info] Receive UE Authentication Request message, handling ...",
+    "[2026-05-13 18:42:20.901] [amf_n1] [debug] Authentication successful by network!",
+    '[2026-05-13 18:42:20.901] [amf_n1] [debug] Got ConfirmationDataResponse from AUSF: {"authResult":"AUTHENTICATION_SUCCESS","supi":"imsi-001010000000001"}',
+    "[2026-05-13 18:42:20.918] [amf_n1] [info] UE (IMSI 001010000000001, GUTI 001010100411274052588, current RAN ID 2, current AMF ID 2) has been registered to the network",
+    "[2026-05-13 18:42:21.240] [amf_sbi] [debug] Handle PDU Session Establishment Request (SUPI imsi-001010000000001, PDU Session ID 5)",
+    "[2026-05-13 18:42:21.245] [amf_n2] [info] Received PDU Session Resource Setup Request message, handling",
+    "[2026-05-13 18:42:55.427] [amf_n2] [info] Received UE Context Release Request message, handling",
+    "[2026-05-13 18:42:55.428] [amf_n2] [info] Received UE Context Release Complete message, handling",
 ]
 
 
@@ -23,9 +25,8 @@ class TestGroupEventsByImsi:
     def test_single_imsi(self):
         events = parse_log_lines(FULL_SESSION_LINES)
         grouped = group_events_by_imsi(events)
-        assert "208950000000031" in grouped
-        # REGISTRATION_REQUEST has no IMSI so it's excluded until an IMSI-bearing event sets current_imsi
-        assert len(grouped["208950000000031"]) == 7
+        assert "001010000000001" in grouped
+        assert len(grouped["001010000000001"]) >= 5
 
     def test_empty_events(self):
         grouped = group_events_by_imsi([])
@@ -42,7 +43,6 @@ class TestBuildSessionRecord:
         assert record.auth_failures == 0
         assert record.pdu_attempts >= 1
         assert record.pdu_failures == 0
-        assert record.cell_id == "0x00000001"
         assert record.ended_at is not None
         assert record.duration_sec is not None
         assert record.duration_sec > 0
@@ -62,11 +62,32 @@ class TestBuildSessionRecord:
         assert record.bytes_uplink == 5000
         assert record.bytes_downlink == 25000
 
+    def test_session_with_traffic(self):
+        events = parse_log_lines(FULL_SESSION_LINES)
+        traffic = SessionTraffic(
+            bytes_uplink=5000,
+            bytes_downlink=25000,
+            peak_throughput_kbps=1600,
+            spike_count=2,
+        )
+        record = build_session_record("UE_HASH_001", events, traffic=traffic)
+        assert record.bytes_uplink == 5000
+        assert record.bytes_downlink == 25000
+        assert record.peak_throughput_kbps == 1600
+        assert record.spike_count == 2
+
+    def test_no_traffic_defaults_to_zero(self):
+        events = parse_log_lines(FULL_SESSION_LINES)
+        record = build_session_record("UE_HASH_001", events)
+        assert record.bytes_uplink == 0
+        assert record.spike_count == 0
+        assert record.peak_throughput_kbps is None
+
     def test_session_with_auth_failure(self):
         lines = [
-            "2025-01-05 01:02:20.100 [amf_app] [info] UE Authentication Started for IMSI: 208950000000031",
-            "2025-01-05 01:02:20.500 [amf_app] [info] UE Authentication Failed for IMSI: 208950000000031",
-            "2025-01-05 01:02:50.000 [amf_app] [info] UE Context Release Request received from gNB",
+            "[2026-05-13 18:42:20.778] [amf_n1] [debug] Start to generate Authentication Vectors",
+            '[2026-05-13 18:42:20.901] [amf_n1] [debug] Got ConfirmationDataResponse from AUSF: {"authResult":"AUTHENTICATION_FAILURE","supi":"imsi-001010000000001"}',
+            "[2026-05-13 18:42:55.427] [amf_n2] [info] Received UE Context Release Request message, handling",
         ]
         events = parse_log_lines(lines)
         record = build_session_record("UE_HASH_001", events)

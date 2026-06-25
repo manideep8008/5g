@@ -29,6 +29,8 @@ from baselines.rule_without_summary import decide_without_summary
 from baselines.single_llm_decision import decide_llm_only
 from network_b.policy.llm_client import LlmConfig, load_llm_config
 from network_b.policy.policy_engine import decide, decide_hybrid
+from network_b.rag.retriever import Retriever
+
 
 ORACLE_PATH = Path(__file__).parent / "oracle_dataset.json"
 RESULTS_PATH = Path(__file__).parents[1] / "data" / "results" / "experiment_results.json"
@@ -64,6 +66,22 @@ def _make_summary(summary_dict: dict) -> UeBehaviouralSummary:
     return UeBehaviouralSummary(**summary_dict)
 
 
+_RETRIEVER: Retriever | None = None
+_RETRIEVER_INITIALIZED = False
+
+
+def _get_retriever() -> Retriever | None:
+    """Lazily load the RAG retriever instance once per process."""
+    global _RETRIEVER, _RETRIEVER_INITIALIZED
+    if not _RETRIEVER_INITIALIZED:
+        try:
+            _RETRIEVER = Retriever.from_disk()
+        except Exception:
+            _RETRIEVER = None
+        _RETRIEVER_INITIALIZED = True
+    return _RETRIEVER
+
+
 async def run_full_system(
     summary: UeBehaviouralSummary,
     access_req: AccessRequest,
@@ -75,6 +93,7 @@ async def run_full_system(
         llm_config=llm_config,
         requested_slice=access_req.requested_slice,
         requested_service=access_req.requested_service,
+        retriever=_get_retriever(),
     )
     latency = (time.perf_counter() - start) * 1000
 
