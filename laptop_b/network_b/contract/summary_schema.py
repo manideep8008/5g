@@ -107,6 +107,10 @@ class PolicyEngineMetadata(BaseModel):
     deterministic_max_tier: str
     rag_enabled: bool = False
     rag_adequate: bool | None = None
+    # Negotiated-attestation audit fields (docs/design/protocol.md).
+    negotiated: bool = False
+    negotiation_transcript_hash: str | None = None
+    negotiation_budget_spent: int | None = None
 
 
 class SimulatedEnforcement(BaseModel):
