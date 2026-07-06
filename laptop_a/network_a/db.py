@@ -28,6 +28,7 @@ _MEMORY_STORE: dict[str, list[dict]] = {
     "ue_risk_flag": [],
     "summary_disclosure": [],
     "budget_ledger": [],
+    "negotiation_transcript": [],
 }
 
 # Serialises check-and-update on the in-memory budget ledger; Postgres gets
@@ -110,6 +111,23 @@ class StorageBackend(Protocol):
         cost: int,
         total: int,
     ) -> int | None:
+        ...
+
+    async def insert_transcript(
+        self,
+        session_id: str,
+        pseudonym: str,
+        requester_id: str,
+        grammar_version: int,
+        opened_at: datetime,
+        closed_at: datetime,
+        final_tier: str,
+        entries: list[dict],
+        transcript_hash: str,
+    ) -> None:
+        ...
+
+    async def get_transcript(self, session_id: str) -> dict | None:
         ...
 
 #This is the in-memory storage class. This is used as a fallback when the Postgres database is not available.
@@ -262,6 +280,36 @@ class InMemoryStorage:
                 return None
             row["spent"] += cost
             return row["spent"]
+
+    async def insert_transcript(
+        self,
+        session_id: str,
+        pseudonym: str,
+        requester_id: str,
+        grammar_version: int,
+        opened_at: datetime,
+        closed_at: datetime,
+        final_tier: str,
+        entries: list[dict],
+        transcript_hash: str,
+    ) -> None:
+        _MEMORY_STORE["negotiation_transcript"].append({
+            "session_id": session_id,
+            "pseudonym": pseudonym,
+            "requester_id": requester_id,
+            "grammar_version": grammar_version,
+            "opened_at": opened_at.isoformat(),
+            "closed_at": closed_at.isoformat(),
+            "final_tier": final_tier,
+            "entries": entries,
+            "transcript_hash": transcript_hash,
+        })
+
+    async def get_transcript(self, session_id: str) -> dict | None:
+        for row in _MEMORY_STORE["negotiation_transcript"]:
+            if row["session_id"] == session_id:
+                return row
+        return None
 
 #this is the production storage class. This is used when the Postgres database is available.
 
@@ -441,6 +489,39 @@ class PostgresStorage:
             pseudonym, requester_id, window_start, cost, total,
         )
 
+    async def insert_transcript(
+        self,
+        session_id: str,
+        pseudonym: str,
+        requester_id: str,
+        grammar_version: int,
+        opened_at: datetime,
+        closed_at: datetime,
+        final_tier: str,
+        entries: list[dict],
+        transcript_hash: str,
+    ) -> None:
+        assert _pool is not None
+        import json
+        await _pool.execute(
+            """
+            INSERT INTO negotiation_transcript (
+                session_id, pseudonym, requester_id, grammar_version,
+                opened_at, closed_at, final_tier, entries, transcript_hash
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+            """,
+            session_id, pseudonym, requester_id, grammar_version,
+            opened_at, closed_at, final_tier, json.dumps(entries), transcript_hash,
+        )
+
+    async def get_transcript(self, session_id: str) -> dict | None:
+        assert _pool is not None
+        row = await _pool.fetchrow(
+            "SELECT * FROM negotiation_transcript WHERE session_id = $1",
+            session_id,
+        )
+        return dict(row) if row else None
+
 #this function returns the active storage engine based on the configuration.
 #@functools.lru_cacsize=1) #this decorator is used to cache the result of the function, so it is only called once
 def _get_backend() -> StorageBackend:
@@ -591,6 +672,31 @@ async def debit_budget(
     """
     backend = _get_backend()
     return await backend.debit_budget(pseudonym, requester_id, window_start, cost, total)
+
+
+async def insert_transcript(
+    session_id: str,
+    pseudonym: str,
+    requester_id: str,
+    grammar_version: int,
+    opened_at: datetime,
+    closed_at: datetime,
+    final_tier: str,
+    entries: list[dict],
+    transcript_hash: str,
+) -> None:
+    """Persist a sealed negotiation transcript (the per-decision audit record)."""
+    backend = _get_backend()
+    await backend.insert_transcript(
+        session_id, pseudonym, requester_id, grammar_version,
+        opened_at, closed_at, final_tier, entries, transcript_hash,
+    )
+
+
+async def get_transcript(session_id: str) -> dict | None:
+    """Fetch a sealed transcript by session id."""
+    backend = _get_backend()
+    return await backend.get_transcript(session_id)
 
 
 def reset_memory_store() -> None:

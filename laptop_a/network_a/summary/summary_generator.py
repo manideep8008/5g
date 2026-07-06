@@ -255,11 +255,18 @@ _TIER_FROM_RISK = [
 ]
 
 
-def _recommend_tier(overall_risk: float) -> Tier:
+def recommend_tier(overall_risk: float) -> Tier:
     for threshold, tier in _TIER_FROM_RISK:
         if overall_risk <= threshold:
             return tier
     return Tier.T0_REJECT
+
+
+def compute_confidence(profile: UeProfile, overall_risk: float) -> float:
+    """Confidence in the classification, discounted when session data is sparse
+    (full confidence only from 10 sessions up)."""
+    data_sufficiency = min(profile.session_count / 10.0, 1.0)
+    return round((1.0 - overall_risk) * data_sufficiency, 4)
 
 
 async def generate_summary(
@@ -285,11 +292,8 @@ async def generate_summary(
     thresholds = get_thresholds()
     summary = generate_behavioural_summary(profile, thresholds)
     overall_risk = compute_overall_risk(profile)
-    recommendation = _recommend_tier(overall_risk)
-
-    # A simple multiplier that reduces confidence if session data is sparse:
-    data_sufficiency = min(profile.session_count / 10.0, 1.0)  # Full confidence only if >= 10 sessions
-    confidence = round((1.0 - overall_risk) * data_sufficiency, 4)
+    recommendation = recommend_tier(overall_risk)
+    confidence = compute_confidence(profile, overall_risk)
 
     response = SummaryResponse(
         request_id=request.request_id,

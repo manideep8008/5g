@@ -57,3 +57,15 @@ CREATE TABLE IF NOT EXISTS budget_ledger (
     spent         INTEGER     NOT NULL DEFAULT 0,
     PRIMARY KEY (pseudonym, requester_id, window_start)
 );
+
+CREATE TABLE IF NOT EXISTS negotiation_transcript (
+    session_id      VARCHAR(64) PRIMARY KEY,
+    pseudonym       VARCHAR(32) NOT NULL,
+    requester_id    VARCHAR(64) NOT NULL,
+    grammar_version INTEGER     NOT NULL,
+    opened_at       TIMESTAMPTZ NOT NULL,
+    closed_at       TIMESTAMPTZ NOT NULL,
+    final_tier      VARCHAR(32),
+    entries         JSONB       NOT NULL,
+    transcript_hash VARCHAR(64) NOT NULL
+);

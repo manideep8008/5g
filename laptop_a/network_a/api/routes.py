@@ -4,6 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 
 from network_a import db
 from network_a.api.signing import require_signed_request, signed_json_response
+from network_a.negotiation import boundary
+from network_a.negotiation.schemas import CloseRequest, QueryRequest, SessionOpenRequest
+from network_a.negotiation.session import SessionExpired, SessionNotFound
 from network_a.summary.summary_generator import generate_summary
 from network_a.summary.summary_schema import SummaryRequest
 
@@ -27,6 +30,41 @@ async def request_summary(req: SummaryRequest, request: Request):
 
     # Sign the response body so Network B can verify it really came from us.
     return signed_json_response("POST", request.url.path, response.model_dump(mode="json"))
+
+
+# ── Negotiated attestation (docs/design/protocol.md) ─────────────
+
+
+@router.post("/attestation/session", dependencies=[Depends(require_signed_request)])
+async def open_attestation_session(req: SessionOpenRequest, request: Request):
+    try:
+        resp = await boundary.open_session(req)
+    except boundary.NoEvidence:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No behavioural history for {req.ue_pseudonym}",
+        )
+    return signed_json_response("POST", request.url.path, resp.model_dump(mode="json"))
+
+
+@router.post("/attestation/query", dependencies=[Depends(require_signed_request)])
+async def attestation_query(req: QueryRequest, request: Request):
+    try:
+        resp = await boundary.handle_query(req)
+    except SessionExpired as exc:
+        raise HTTPException(status_code=404, detail=f"session closed: {exc.reason}")
+    except SessionNotFound:
+        raise HTTPException(status_code=404, detail="unknown or closed session")
+    return signed_json_response("POST", request.url.path, resp.model_dump(mode="json"))
+
+
+@router.post("/attestation/close", dependencies=[Depends(require_signed_request)])
+async def close_attestation_session(req: CloseRequest, request: Request):
+    try:
+        resp = await boundary.close_session(req)
+    except SessionNotFound:
+        raise HTTPException(status_code=404, detail="unknown or closed session")
+    return signed_json_response("POST", request.url.path, resp.model_dump(mode="json"))
 
 
 # ── Admin / demo endpoints ───────────────────────────────────────
