@@ -156,9 +156,18 @@ async def negotiate(
                 )
                 beliefs.unresolvable.add(question.facet_key)
 
-        _, risk_max = risk_bounds(beliefs)
+        risk_min, risk_max = risk_bounds(beliefs)
         tier = tier_for(risk_max)
         risk_score = risk_max
+        # Uncertainty restricts, never rejects: an early stop may decide
+        # T0 only when established facts alone warrant it. Otherwise the
+        # worst case gets T1 — the same posture as the no-summary fallback.
+        if (
+            stop_reason != "tier_stable"
+            and tier == Tier.T0_REJECT
+            and tier_for(risk_min) != Tier.T0_REJECT
+        ):
+            tier = Tier.T1_RESTRICTED_ACCESS
 
     deterministic_max_tier = tier
     final_tier, clipped, floor_reason = apply_negotiated_floor(tier, beliefs)

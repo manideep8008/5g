@@ -225,13 +225,16 @@ async def test_unaffordable_questions_decide_conservatively():
 
 @pytest.mark.asyncio
 async def test_refused_query_decides_conservatively():
-    """A drained shared window: A refuses the first paid question."""
+    """A drained shared window: A refuses the first paid question. The
+    worst-case bound says T0, but nothing is established — uncertainty
+    restricts (T1), it never rejects outright."""
     client = FakeClient(SUSPICIOUS, answers={}, budget=10, open_budget=100)
     outcome = await run(client)
 
     assert outcome.stop_reason == "budget_exhausted"
     assert outcome.budget_spent == 0
-    assert outcome.final_tier == tier_for(outcome.risk_score)
+    assert tier_for(outcome.risk_score) == Tier.T0_REJECT
+    assert outcome.final_tier == Tier.T1_RESTRICTED_ACCESS
 
 
 @pytest.mark.asyncio
@@ -305,5 +308,11 @@ async def test_no_answer_sequence_exceeds_the_deterministic_ceiling():
         assert outcome is not None
         assert outcome.questions_asked <= MAX_QUESTIONS
         assert outcome.budget_spent <= 100
-        # The floor can only lower the tier below the risk-derived ceiling.
-        assert TIER_ORDER[outcome.final_tier] <= TIER_ORDER[tier_for(outcome.risk_score)]
+        # The floor can only lower the tier below the risk-derived ceiling,
+        # with one deliberate exception: an early stop whose worst case says
+        # T0 grants T1 instead when nothing established warrants rejection.
+        ceiling = max(
+            TIER_ORDER[tier_for(outcome.risk_score)],
+            TIER_ORDER[Tier.T1_RESTRICTED_ACCESS],
+        )
+        assert TIER_ORDER[outcome.final_tier] <= ceiling

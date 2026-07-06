@@ -119,6 +119,13 @@ cost signals.
 Invariant: no failure path ever increases disclosure or increases granted
 access relative to the success path.
 
+One deliberate asymmetry: **uncertainty restricts, it never rejects
+outright**. An early-stopped negotiation (budget out, limits hit) decides
+against the worst-case risk bound, but may only decide T0_REJECT when
+established facts alone warrant it — otherwise the floor of the fallback
+posture is T1 restricted, matching today's no-summary behavior. Rejection is
+an evidence-based decision, not a default.
+
 ## Audit objects
 
 Three records per decision:
