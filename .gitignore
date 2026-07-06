@@ -1,0 +1,21 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv/
+*.egg-info/
+.pytest_cache/
+.DS_Store
+
+# Runtime artifacts (keep .gitkeep and checked-in samples)
+**/data/logs/*
+!**/data/logs/.gitkeep
+!**/data/logs/sample_*
+**/data/access_decisions/*
+!**/data/access_decisions/.gitkeep
+**/data/summaries/*
+!**/data/summaries/.gitkeep
+**/data/results/
+
+# Local tool config
+.claude/settings.local.json

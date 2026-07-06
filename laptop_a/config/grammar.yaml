@@ -1,0 +1,57 @@
+# Question grammar for the negotiated attestation protocol.
+# This file is the disclosure surface: anything not listed here is rejected
+# at the boundary. Rows are immutable once released — changing a domain,
+# cost, or grounding rule requires a new predicate name and a version bump.
+# See docs/design/grammar.md for grounding rules and cost rationale.
+
+version: 1
+
+budget:
+  total: 100
+  window_sec: 3600
+
+predicates:
+  trend:
+    args:
+      facet: [auth_failures, pdu_failures, traffic_spikes]
+    answers: [increasing, flat, decreasing]
+    cost: 10
+    responder: trend
+
+  flag_age:
+    answers: [none, recent, old]
+    cost: 10
+    responder: anomaly
+
+  auth_stability:
+    answers: [high, medium, low]
+    cost: 15
+    responder: behavioral
+
+  pdu_stability:
+    answers: [high, medium, low]
+    cost: 15
+    responder: behavioral
+
+  traffic_pattern:
+    answers: [stable, moderate, volatile]
+    cost: 15
+    responder: behavioral
+
+  session_regularity:
+    answers: [regular, irregular]
+    cost: 15
+    responder: behavioral
+
+  resource_novelty:
+    args:
+      kind: [slice, dnn]
+      value: identifier
+    answers: [known, novel]
+    cost: 20
+    responder: behavioral
+
+  anomaly_status:
+    answers: [none, resolved, active]
+    cost: 25
+    responder: anomaly

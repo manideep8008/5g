@@ -1,0 +1,68 @@
+policy:
+  mode: hybrid  # hybrid | rules_only | llm_only
+
+risk_weights:
+  auth_stability: 0.25
+  pdu_session_stability: 0.20
+  traffic_pattern: 0.20
+  recent_anomaly: 0.20
+  behaviour_label: 0.15
+
+tier_thresholds:
+  T3_FULL_ACCESS: {max_risk: 0.20}
+  T2_MONITORED_ACCESS: {max_risk: 0.50}
+  T1_RESTRICTED_ACCESS: {max_risk: 0.80}
+  T0_REJECT: {min_risk: 0.80}
+
+safety_floor:
+  enabled: true
+  hard_rules:
+    - condition: "recent_anomaly == true"
+      max_tier: T2_MONITORED_ACCESS
+    - condition: "auth_stability == 'low'"
+      max_tier: T1_RESTRICTED_ACCESS
+    - condition: "behaviour_label == 'anomalous'"
+      max_tier: T1_RESTRICTED_ACCESS
+
+llm:
+  model: gpt-oss:120b-cloud
+  temperature: 0.0
+  base_url: http://localhost:11434
+  timeout_sec: 30
+
+rag:
+  enabled: true
+  embedding:
+    # Ollama model used for embeddings. Falls back to deterministic
+    # hashing-trick vectors if Ollama is unreachable or the model
+    # is missing — used only as a safety net for tests/dev.
+    model: nomic-embed-text
+    base_url: http://localhost:11434
+    timeout_sec: 15
+    dim: 768
+  store:
+    # Where the indexed knowledge base lives on disk.
+    path: data/knowledge_base/index
+  retrieval:
+    # Top-k snippets per source type before adequacy check.
+    top_k_policy: 3
+    top_k_precedent: 3
+    top_k_principle: 2
+    # Cosine similarity cutoff; results below this are discarded.
+    min_similarity: 0.15
+    # Maximum total snippets shown to the LLM after adequacy filtering.
+    max_total_snippets: 6
+    # Per-snippet character cap (defence against prompt-injection bloat).
+    max_snippet_chars: 600
+  adequacy:
+    # Minimum number of distinct facets that must be covered before the
+    # bundle is considered adequate. Facets: policy, precedent, principle.
+    min_facets: 2
+    # If retrieval is inadequate, expand retrieval by this factor before
+    # falling back to non-RAG behaviour.
+    expansion_factor: 2
+  precedents:
+    # Maximum age (days) for past decisions to be considered as precedent.
+    max_age_days: 90
+    # Cap on indexed precedents to prevent unbounded KB growth.
+    max_count: 1000
