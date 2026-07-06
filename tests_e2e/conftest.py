@@ -13,7 +13,7 @@ from pathlib import Path
 
 _DIST_ROOT = Path(__file__).resolve().parent.parent
 
-for laptop in ("laptop_a", "laptop_b"):
-    path = str(_DIST_ROOT / laptop)
+for _root in (_DIST_ROOT, _DIST_ROOT / "laptop_a", _DIST_ROOT / "laptop_b"):
+    path = str(_root)
     if path not in sys.path:
         sys.path.insert(0, path)

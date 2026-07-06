@@ -72,3 +72,27 @@ With `NEGOTIATION_ENABLED=false` (the default) Network B uses the original
 one-shot summary path — which is also the evaluation baseline. Every failure
 of the negotiated path (A down, bad signatures, drained budget) fails closed
 to at most T1 restricted access.
+
+## Evaluation
+
+One command regenerates the evaluation chapter's data and figures from
+scratch — a 46-UE synthetic corpus (ground truth known by construction)
+replayed through both paths across a privacy-budget sweep:
+
+    python3 -m evaluation.run          # → evaluation/results/
+
+Reference results (seed 7):
+
+| path | budget | accuracy | over-grant | mean disclosure |
+|---|---|---|---|---|
+| fixed six-field summary | — | 89.1% | 0% | 90.0 pts |
+| negotiated | 25 | 60.9% | 17.4%* | 19.4 pts |
+| negotiated | 75 | 91.3% | 0% | 47.6 pts |
+| negotiated | **100** | **97.8%** | **0%** | **54.1 pts** |
+
+The negotiated path at full budget is both more accurate than the fixed
+summary (it can distinguish recovered UEs from live-troubled ones) and
+discloses 40% less on average (easy cases decide from the free attestation
+alone). *Low-budget "over-grants" are hostile UEs receiving T1 restricted
+instead of T0 reject — the deliberate "uncertainty restricts, never rejects"
+rule; they vanish once the budget lets the agent confirm rejection.
